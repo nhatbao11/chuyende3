@@ -2,298 +2,233 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>iPhone 17 - Ưu Đãi Đặc Biệt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iPhone 17 – Ưu đãi đặt biệt</title>
+
   <style>
-    :root{
-      --bg:#0f1724;
-      --card:#0b1220;
-      --accent1:#06b6d4;
-      --accent2:#7c3aed;
-      --muted:rgba(255,255,255,0.72);
-      --glass: rgba(255,255,255,0.04);
-      --radius:18px;
-      --maxw:1100px;
-      --container-pad:28px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    :root {
+      --bg: #000000;
+      --fg: #eaeaea;
+      --accent: #8cd3ff;
+      --muted: #9ca3af;
     }
+
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:linear-gradient(180deg,#071229 0%, #071a2f 40%, #041022 100%);
-      color:white;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:40px 20px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:16px;
+    html,body{
+      height:100%; margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto;
+      background:#000;
+      color:var(--fg);
     }
 
-    .wrap{
-      width:100%;
-      max-width:var(--maxw);
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:24px;
-      padding:var(--container-pad);
-      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:28px;
-      align-items:stretch;
+    /* Background ánh sáng */
+    .bg-aurora{
+      position:fixed; inset:-20vmax; z-index:-1;
+      background:radial-gradient(800px 600px at 60% 20%,rgba(140,211,255,0.25),rgba(0,0,0,0));
+      filter:blur(80px); opacity:.45;
+      animation:gradientMove 10s ease infinite;
     }
 
-    /* Left column */
+    .wrap{max-width:1100px;margin:0 auto;padding:28px}
+
+    /* Hero */
     .hero{
-      padding:28px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      gap:18px;
-    }
-    .kicker{
-      display:inline-block;
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      font-weight:700;
-      letter-spacing:0.6px;
-    }
-    h1{
-      margin:0;
-      font-size:44px;
-      line-height:1.02;
-      letter-spacing:-0.02em;
-    }
-    p.lead{
-      margin:0;
-      color:var(--muted);
-      font-size:17px;
-      max-width:66ch;
+      display:grid; gap:22px; margin:40px 0; padding:30px;
+      border-radius:26px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.06);
+      backdrop-filter:blur(12px);
     }
 
-    .badges{display:flex;gap:10px;margin-top:6px}
-    .badge{background:var(--glass);padding:8px 12px;border-radius:999px;font-weight:600;color:var(--muted);font-size:13px}
+    h1{font-size:clamp(32px,3.5vw,52px);margin:0;font-weight:700;}
+    .sub{color:var(--muted);font-size:17px;line-height:1.6}
 
-    .features{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
-    .feat{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;min-width:140px}
-    .feat b{display:block}
+    .cta{
+      display:inline-flex;align-items:center;gap:10px;
+      background:var(--accent);color:#000;
+      padding:14px 22px;border-radius:14px;
+      font-size:17px;font-weight:700;
+      text-decoration:none;border:none;cursor:pointer;
+      transition:transform .12s ease;
+    }
+    .cta:hover{transform:translateY(-2px)}
 
-    /* Right column - card */
+    /* Form */
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:16px;
-      padding:22px;
-      border:1px solid rgba(255,255,255,0.04);
-      position:relative;
-      min-height:360px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.05);
+      border-radius:20px;padding:26px;
     }
-    .price-row{display:flex;justify-content:space-between;align-items:center}
-    .price{font-size:28px;font-weight:800}
-    .old{color:rgba(255,255,255,0.35);text-decoration:line-through;font-weight:600}
 
-    .phone-mock{
-      width:100%;height:220px;border-radius:16px;background:linear-gradient(180deg,#07162a,#001018);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin:14px 0;border:1px solid rgba(255,255,255,0.03)
+    input[type=text],input[type=email]{
+      width:100%;padding:12px 14px;
+      background:#0b0b0b;
+      border:1px solid #2a2a2a;
+      border-radius:12px;color:var(--fg);
+      outline:none;
     }
-    .phone-mock:after{content:'';position:absolute;inset:auto -30% -20% -30%;transform:rotate(20deg);background:linear-gradient(90deg, rgba(124,58,237,0.12), rgba(6,182,212,0.08));filter:blur(40px)}
-    .phone-svg{width:160px;height:auto}
 
-    form{display:flex;flex-direction:column;gap:12px}
-    input[type="text"], input[type="email"]{
-      padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:white;outline:none;font-size:15px
+    input[type=text]:focus,input[type=email]:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(140,211,255,0.15);
     }
-    input::placeholder{color:rgba(255,255,255,0.45)}
-    .cta{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:12px 16px;border-radius:12px;border:none;color:#021023;font-weight:800;cursor:pointer;font-size:15px}
-    .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px;border-radius:12px;cursor:pointer}
 
-    .small{font-size:13px;color:var(--muted)}
-    .muted{color:var(--muted)}
+    label{font-size:15px;color:var(--muted);}
 
-    /* testimonials */
-    .testi{display:flex;gap:12px;align-items:center;margin-top:12px}
-    .avatar{width:44px;height:44px;border-radius:999px;background:linear-gradient(90deg,var(--accent2),var(--accent1));display:flex;align-items:center;justify-content:center;font-weight:700}
+    .illus img{
+      width:330px; max-width:90%;
+      animation:floaty 6s ease-in-out infinite;
+      filter:drop-shadow(0 20px 50px rgba(140,211,255,0.25));
+    }
 
-    /* success */
-    .hidden{display:none}
+    .ok{color:#4ade80;}
+    .err{color:#f87171;}
 
-    footer{grid-column:1 / -1;margin-top:18px;text-align:center;color:rgba(255,255,255,0.45);font-size:13px}
-
-    @media (max-width:980px){
-      .wrap{grid-template-columns:1fr; padding:18px}
-      .phone-mock{height:180px}
-      h1{font-size:34px}
+    pre.jsonbox{
+      background:#0a0a0a;
+      color:#8cd3ff;
+      font-size:13px;
+      padding:10px 12px;border-radius:10px;
+      border:1px solid #1f1f1f;
+      white-space:pre-wrap;
+      word-break:break-all;
     }
   </style>
 </head>
+
 <body>
-  <div class="wrap" role="main">
-    <div class="hero">
-      <div class="kicker">Ưu đãi có hạn • iPhone 17</div>
-      <h1>iPhone 17 — Sức mạnh mới, thiết kế đỉnh cao</h1>
-      <p class="lead">Bản nâng cấp đáng giá: Màn hình XDR Pro, chip A18 Ultra, pin lâu hơn và camera nâng cấp — giá ưu đãi chỉ trong thời gian giới hạn. Đăng ký ngay để nhận thông tin giá tốt và quà tặng kèm.</p>
+  <div class="bg-aurora"></div>
 
-      <div class="badges">
-        <div class="badge">Trả góp 0% (6 tháng)</div>
-        <div class="badge">Giao nhanh 24 giờ</div>
-        <div class="badge">Bảo hành 12 tháng</div>
+  <div class="wrap">
+    <header class="hero">
+      <div class="pill" style="font-size:14px;color:var(--muted);">Ưu Đãi • Đặt biệt giảm giá 20%</div>
+
+      <h1>iPhone 17 – Giảm giá sâu 20%<br/>Nhận Ưu Đãi Độc Quyền</h1>
+      <p class="sub">Nhập thông tin để giữ suất ưu đãi iPhone 17 – số lượng giới hạn.</p>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:28px">
+        <!-- <button id="ctaTop" class="cta">Đặt trước iPhone 17</button> -->
+
+        <div class="illus">
+          <!-- Bạn thay link ảnh tuỳ thích -->
+          <img src="https://cdn.idealo.com/folder/Product/207702/1/207702129/s10_produktbild_max/apple-iphone-17-256gb-lavender.jpg" alt="iPhone 17" />
+        </div>
       </div>
+    </header>
 
-      <div class="features" aria-hidden="true">
-        <div class="feat"><b>Màn hình</b> 6.7" XDR Pro</div>
-        <div class="feat"><b>Chip</b> A18 Ultra</div>
-        <div class="feat"><b>Camera</b> 48MP Pro + LiDAR</div>
-        <div class="feat"><b>Pin</b> Dùng cả ngày + sạc nhanh</div>
-      </div>
+    <!-- FORM -->
+    <section>
+      <div class="card">
+        <h2>Đăng ký giữ ưu đãi</h2>
 
-      <div style="margin-top:16px">
-        <div class="small muted">Khách hàng nói về iPhone 17</div>
-        <div class="testi">
-          <div class="avatar">NBN</div>
+        <form id="leadForm" class="row" autocomplete="on">
           <div>
-            <div style="font-weight:700">Nhat Bao Nguyen</div>
-            <div class="small muted">"Màn hình sáng, chụp ảnh vượt trội so với đời trước."</div>
+            <label>Họ và tên</label>
+            <input id="name" name="name" type="text" placeholder="Nguyễn Văn A" />
           </div>
-        </div>
+
+          <div>
+            <label>Email <span class="muted">(bắt buộc)</span></label>
+            <input id="email" name="email" type="email" required placeholder="ban@vidu.com" />
+          </div>
+
+          <div>
+            <label>
+              <input id="consent" type="checkbox"/>
+              Tôi đồng ý nhận thông tin ưu đãi & cập nhật về iPhone 17.
+            </label>
+          </div>
+
+          <!-- Hidden tracking -->
+          <input type="hidden" name="client_id" id="client_id" />
+          <input type="hidden" name="session_id" id="session_id" />
+          <input type="hidden" name="referrer" id="referrer" />
+          <input type="hidden" name="user_agent" id="user_agent" />
+
+          <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+            <button id="submitBtn" class="cta" type="submit">Giữ ưu đãi</button>
+            <small id="status" class="muted"></small>
+          </div>
+
+          <pre id="jsonDebug" class="jsonbox" style="display:none"></pre>
+        </form>
       </div>
-    </div>
+    </section>
 
-    <aside class="card" aria-label="Đăng ký nhận ưu đãi">
-      <div class="price-row">
-        <div>
-          <div class="small muted">Giá từ</div>
-          <div class="price">29.990.000₫</div>
-          <div class="old">(Giá gốc 34.990.000₫)</div>
-        </div>
-        <div style="text-align:right">
-          <div class="small muted">Số lượng khuyến mãi còn</div>
-          <div style="font-weight:800;font-size:20px">35</div>
-        </div>
-      </div>
-
-      <div class="phone-mock" role="img" aria-label="iPhone 17 mockup" style="position:relative; overflow:hidden;">
-        <!-- Ảnh full div -->
-        <img src="https://cdn-media.sforum.vn/storage/app/media/doanphuong/anh-iphone-17/iphone17%20pro/anh-iphone-17-51.jpg" 
-             style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;" alt="iPhone 17">
-        
-        <!-- Nếu muốn overlay hoặc các hình SVG trên ảnh -->
-        <svg viewBox="0 0 200 400" style="position:absolute; top:0; left:0; width:100%; height:100%;">
-            <defs>
-                <linearGradient id="g" x1="0" x2="1">
-                    <stop offset="0" stop-color="#7c3aed" stop-opacity="0.2"/>
-                    <stop offset="1" stop-color="#06b6d4" stop-opacity="0.2"/>
-                </linearGradient>
-            </defs>
-            <rect x="0" y="0" width="200" height="400" fill="url(#g)"/>
-        </svg>
-    </div>
-    
-      
-
-      <form id="leadForm" aria-label="Form đăng ký">
-        <label class="small">Tên của bạn</label>
-        <input id="name" name="name" type="text" placeholder="Nhập tên" required />
-
-        <label class="small">Email liên hệ</label>
-        <input id="email" name="email" type="email" placeholder="you@email.com" required />
-
-        <button type="submit" class="cta">Đăng ký nhận ưu đãi</button>
-
-        <div id="formMsg" class="small muted hidden" role="status"></div>
-      </form>
-
-      <div style="position:absolute; left:22px; bottom:18px; right:22px; display:flex; justify-content:center; align-items:center;">
-        <div class="small muted">An toàn - Không spam. Chỉ thông báo ưu đãi.</div>
-    </div>
-    
-    </aside>
-
-    <footer>© 2025 - Ưu đãi iPhone 17 • Bảo hành chính hãng • Giao hàng toàn quốc</footer>
+    <footer style="margin:40px 0;opacity:.8;text-align:center">
+      <small class="muted">© 2025 iPhone 17 Pre-order Landing Page</small>
+    </footer>
   </div>
 
-  <script>
-    // Simple lead capture: validate and save to localStorage (array 'leads')
-    (function(){
-      const form = document.getElementById('leadForm');
-      const nameInput = document.getElementById('name');
-      const emailInput = document.getElementById('email');
-      const msg = document.getElementById('formMsg');
-      const demoBtn = document.getElementById('demoBtn');
+<script>
+/* ======================== CONFIG ======================== */
+const CONFIG = { LEADS_ENDPOINT: "http://103.75.183.194:5678/webhook/lp-leads" };
 
-      function showMessage(text, isError){
-        msg.textContent = text;
-        msg.classList.remove('hidden');
-        msg.style.color = isError ? '#ffb4b4' : '#bffcf0';
-        setTimeout(()=>{ msg.classList.add('hidden') }, 5000);
-      }
+/* ======================== HELPERS ======================== */
+const $ = (id)=>document.getElementById(id);
+const safe = (s)=>String(s??'').replace(/</g,'&lt;');
 
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
-        if(name.length < 2){ showMessage('Vui lòng nhập tên hợp lệ', true); nameInput.focus(); return }
-        if(!/^\S+@\S+\.\S+$/.test(email)){ showMessage('Vui lòng nhập email hợp lệ', true); emailInput.focus(); return }
+/* (Các phần tracking client_id, session_id, referrer giữ nguyên code của bạn — thêm lại vào đây nếu trước đó có) */
 
-        // save to localStorage as leads
-        try{
-          const key = 'leads_iphone17';
-          const raw = localStorage.getItem(key);
-          const arr = raw ? JSON.parse(raw) : [];
-          arr.unshift({name:name,email:email,created:new Date().toISOString()});
-          localStorage.setItem(key, JSON.stringify(arr.slice(0,500)));
+/* ======================== SUBMIT FORM ======================== */
+const form = document.getElementById('leadForm');
 
-          // visual feedback
-          showMessage('Cảm ơn! Thông tin của bạn đã được ghi nhận — chúng tôi sẽ liên hệ sớm.', false);
-          form.reset();
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
 
-          // small confetti effect
-          confettiBurst();
-        }catch(err){
-          console.error(err);
-          showMessage('Có lỗi xảy ra, vui lòng thử lại.', true);
-        }
-      });
+  const statusEl = $("status");
+  statusEl.textContent = "Đang gửi...";
+  $("submitBtn").disabled = true;
 
-      demoBtn.addEventListener('click', ()=>{
-        alert('iPhone 17: Màn hình 6.7" XDR Pro • Chip A18 Ultra • Camera 48MP • Pin cả ngày.\nLiên hệ hotline để biết thêm chi tiết.');
-      });
+  const data = Object.fromEntries(new FormData(form).entries());
 
-      function confettiBurst(){
-        const cvs = document.createElement('canvas');
-        cvs.style.position='fixed';cvs.style.left=0;cvs.style.top=0; cvs.style.pointerEvents='none';
-        cvs.width = window.innerWidth; cvs.height = window.innerHeight;
-        document.body.appendChild(cvs);
-        const ctx = cvs.getContext('2d');
-        const pieces = [];
-        for(let i=0;i<40;i++) pieces.push({x:window.innerWidth/2 + (Math.random()-0.5)*200, y:window.innerHeight/2 + (Math.random()-0.5)*200, vx:(Math.random()-0.5)*6, vy:Math.random()*-8-2, r:Math.random()*6+4, c:['#7c3aed','#06b6d4','#fbbf24','#60a5fa'][Math.floor(Math.random()*4)]});
-        let t=0; const id = setInterval(()=>{
-          ctx.clearRect(0,0,cvs.width,cvs.height);
-          pieces.forEach(p=>{
-            p.x+=p.vx; p.y+=p.vy; p.vy+=0.3; p.r*=0.999;
-            ctx.fillStyle=p.c; ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r, p.r*0.7, 0,0,Math.PI*2); ctx.fill();
-          });
-          t+=16; if(t>1200){ clearInterval(id); document.body.removeChild(cvs) }
-        },16);
-      }
+  if(!data.email){
+    statusEl.textContent="Vui lòng nhập email";
+    $("submitBtn").disabled = false;
+    return;
+  }
 
-      // Small helper: expose a function to download leads as CSV for convenience
-      window.downloadLeadsCSV = function(){
-        const key='leads_iphone17';
-        const raw = localStorage.getItem(key); if(!raw){ alert('Chưa có leads nào.'); return }
-        const arr = JSON.parse(raw);
-        const rows = ['Tên,Email,Thời gian'];
-        arr.forEach(r=> rows.push(`${escapeCsv(r.name)},${escapeCsv(r.email)},${r.created}`));
-        const blob = new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href=url; a.download='leads_iphone17.csv'; a.click();
-        URL.revokeObjectURL(url);
+  try{
+    const res = await fetch(CONFIG.LEADS_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ...data,
+        consent: document.getElementById('consent').checked,
+        source_lp: location.hostname
+      })
+    });
 
-        function escapeCsv(s){ if(!s) return ''; return '"'+String(s).replace(/"/g,'""')+'"' }
-      }
+    let j = {};
+    try { j = await res.json(); } catch(_){}
 
-    })();
-  </script>
+    const msg = j.message || j.reason || "";
+
+    if (j.status === 'ok') {
+      statusEl.innerHTML = '<span class="ok">Đăng ký thành công!</span>';
+      form.reset();
+    }
+    else if (j.status === 'error' && msg) {
+      statusEl.innerHTML = `<span class="err">${safe(msg)}</span>`;
+    }
+    else if (res.ok && (res.status === 204 || Object.keys(j).length === 0)) {
+      statusEl.innerHTML = '<span class="ok">Đăng ký thành công!</span>';
+      form.reset();
+    }
+    else {
+      statusEl.innerHTML = '<span class="err">Có lỗi xảy ra, thử lại sau.</span>';
+    }
+
+  }catch(err){
+    statusEl.innerHTML = '<span class="err">Không thể kết nối máy chủ.</span>';
+  }finally{
+    $("submitBtn").disabled = false;
+  }
+});
+</script>
+
 </body>
 </html>
