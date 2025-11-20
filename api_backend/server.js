@@ -4,6 +4,7 @@ const cors = require('cors');
 const getLeadsRouter = require('./routes/getLeads.js');
 const updateLeadsRouter = require('./routes/updateLeads.js');
 const generateEmailRouter = require('./routes/generateEmail.js');
+const trackingRouter = require('./routes/tracking.js');
 
 const app = express();
 app.use(express.json());
@@ -19,6 +20,9 @@ app.use('/markLeadAsOld', updateLeadsRouter);
 
 // generateEmails
 app.use('/generateEmail', generateEmailRouter);
+
+// tracking
+app.use('/tracking', trackingRouter);
 
 // Start server
 app.listen(PORT, () => {
