@@ -8,34 +8,48 @@ router.post('/log', async (req, res) => {
     const { lead_id, email, action, campaign_name } = req.body;
 
     if (!lead_id || !action) {
-      return res.status(400).send("Thiếu thông tin lead_id hoặc action");
+      return res.status(400).send("Thiếu thông tin");
     }
 
-    // Save into collection 'email_events'
-    const eventData = {
-      lead_id: lead_id,
-      email: email || 'unknown',
-      action: action,
-      campaign_name: campaign_name || 'default_campaign',
+    // 1. VẪN GHI LOG CHI TIẾT (Cho Person 3 tính ROI theo thời gian)
+    // Không chặn, cứ để nó ghi nhiều dòng cũng được
+    await db.collection('email_events').add({
+      lead_id,
+      email,
+      action,
+      campaign_name: campaign_name || 'default',
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      
-      // Lưu thêm User Agent để biết họ dùng Mobile hay PC (ROI cũng cần cái này để tối ưu hiển thị)
-      device_info: req.headers['user-agent'] || 'unknown' 
-    };
+      userAgent: req.headers['user-agent'] // Lưu thiết bị (Mobile/PC)
+    });
 
-    await db.collection('email_events').add(eventData);
-
-    // (Tùy chọn) Update ngược lại bảng leads để biết khách còn "sống" không
-    await db.collection('leads').doc(lead_id).update({
+    // 2. CẬP NHẬT THÔNG MINH VÀO BẢNG LEADS (Cho Dashboard của bạn)
+    const leadRef = db.collection('leads').doc(lead_id);
+    
+    // Tạo object update động
+    let updateData = {
       last_activity: action,
       last_activity_at: admin.firestore.FieldValue.serverTimestamp()
-    });
+    };
+
+    // Nếu là 'open' -> Tăng biến open_count lên 1
+    if (action === 'open') {
+      updateData.open_count = admin.firestore.FieldValue.increment(1);
+      updateData.hasOpened = true; // Đánh dấu là đã từng mở
+    }
+
+    // Nếu là 'click' -> Tăng biến click_count lên 1
+    if (action === 'click') {
+      updateData.click_count = admin.firestore.FieldValue.increment(1);
+      updateData.hasClicked = true; // Đánh dấu là đã từng click
+    }
+
+    await leadRef.update(updateData);
 
     return res.status(200).json({ success: true });
 
   } catch (error) {
-    console.error('Lỗi lưu email_events:', error);
-    return res.status(200).json({ success: false }); // Luôn trả về true để flow không chết
+    console.error('Lỗi tracking:', error);
+    return res.status(200).json({ success: false }); 
   }
 });
 

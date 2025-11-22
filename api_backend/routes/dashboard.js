@@ -4,60 +4,41 @@ const db = require('../db.js');
 
 router.get('/', async (req, res) => {
   try {
-    // 1. Lấy tất cả Leads
+    // 1. Lấy danh sách Leads từ Firestore
     const leadsSnapshot = await db.collection('leads').get();
     const leads = [];
-    leadsSnapshot.forEach(doc => {
-      leads.push({ id: doc.id, ...doc.data() });
-    });
 
-    // 2. Lấy tất cả Events (Open/Click)
-    const eventsSnapshot = await db.collection('email_events').get();
-    const events = [];
-    eventsSnapshot.forEach(doc => {
-      events.push(doc.data());
-    });
-
-    // 3. Xử lý logic: Map event vào từng lead để biết ai đã làm gì
+    // Biến để tính tổng cho cả chiến dịch
     let totalOpens = 0;
     let totalClicks = 0;
 
-    const processedLeads = leads.map(lead => {
-      // Tìm các event của lead này
-      const leadEvents = events.filter(e => e.lead_id === lead.id);
-      
-      const hasOpened = leadEvents.some(e => e.action === 'open');
-      const hasClicked = leadEvents.some(e => e.action === 'click');
+    leadsSnapshot.forEach(doc => {
+      const data = doc.data();
 
-      if (hasOpened) totalOpens++;
-      if (hasClicked) totalClicks++;
-
-      // Lấy thời gian tương tác cuối cùng
-      // (Logic đơn giản, lấy timestamp của event mới nhất nếu có)
-      let lastInteractionTime = null;
-      if (leadEvents.length > 0) {
-         // Sắp xếp lấy cái mới nhất
-         // Lưu ý: Timestamp Firestore cần xử lý toDate(), ở đây demo đơn giản
-         const lastEvent = leadEvents[leadEvents.length - 1]; 
-         if(lastEvent.timestamp && lastEvent.timestamp.toDate) {
-            lastInteractionTime = lastEvent.timestamp.toDate();
-         }
+      if (data.open_count && data.open_count > 0) {
+        totalOpens += 1; 
       }
 
-      return {
-        ...lead,
-        hasOpened,
-        hasClicked,
-        lastInteractionTime
-      };
+      if (data.click_count && data.click_count > 0) {
+        totalClicks += 1;
+      }
+
+      leads.push({
+        id: doc.id,
+        ...data,
+        // Đảm bảo luôn có giá trị mặc định để không lỗi giao diện
+        open_count: data.open_count || 0,
+        click_count: data.click_count || 0,
+	lastInteractionTime: (data.last_activity_at && data.last_activity_at.toDate) ? data.last_activity_at.toDate() : null
+      });
     });
 
-    // 4. Render ra file stats.ejs
+    // 3. Trả dữ liệu ra file giao diện (stats.ejs)
     res.render('stats', {
-      leads: processedLeads,
+      leads: leads,
       totalLeads: leads.length,
-      totalOpens,
-      totalClicks
+      totalOpens: totalOpens,   // Tổng số lần mở của tất cả mọi người
+      totalClicks: totalClicks  // Tổng số lần click của tất cả mọi người
     });
 
   } catch (error) {
