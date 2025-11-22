@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê Email Campaign</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .badge-success { background-color: #28a745; color: white; }
+	.badge-secondary { background-color: #6c757d; color: white; }
+	.badge-warning { background-color: #ffc107; color: #000; }
+	.badge-dark { background-color: #343a40; color: white; }
+	
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h2 class="mb-4 text-center text-primary">Customer Email Action Dashboard</h2>
+        
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">Total Leads</div>
+                    <div class="card-body">
+                        <h3 class="card-title"><%= totalLeads %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">Total Email Opened</div>
+                    <div class="card-body">
+                        <h3 class="card-title"><%= totalOpens %></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-info mb-3">
+                    <div class="card-header">Total Link Clicked</div>
+                    <div class="card-body">
+                        <h3 class="card-title"><%= totalClicks %></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name / Email</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Opened?</th>
+                            <th class="text-center">Clicked?</th>
+                            <th>Last update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% leads.forEach(function(lead) { %>
+                            <tr>
+                                <td><small class="text-muted"><%= lead.id.substring(0, 6) %>...</small></td>
+                                <td>
+                                    <strong><%= lead.name || 'No Name' %></strong><br>
+                                    <small><%= lead.email || 'No Email' %></small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge <%= lead.status === 'NEW' ? 'badge-warning' : 'badge-dark' %>">
+                                        <%= lead.status %>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <% if (lead.hasOpened) { %>
+                                        <span class="badge badge-success">YES</span>
+                                    <% } else { %>
+                                        <span class="badge badge-secondary">NO</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <% if (lead.hasClicked) { %>
+                                        <span class="badge badge-success">YES</span>
+                                    <% } else { %>
+                                        <span class="badge badge-secondary">NO</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <small><%= lead.lastInteractionTime ? new Date(lead.lastInteractionTime).toLocaleString('vi-VN') : 'No Action' %></small>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
