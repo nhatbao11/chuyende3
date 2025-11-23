@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+const sendEmailRouter = require('./routes/sendEmails.js');
 const getLeadsRouter = require('./routes/getLeads.js');
 const updateLeadsRouter = require('./routes/updateLeads.js');
 const generateEmailRouter = require('./routes/generateEmail.js');
@@ -29,8 +30,11 @@ app.use('/generateEmail', generateEmailRouter);
 // tracking
 app.use('/tracking', trackingRouter);
 
-// dashbpard
+// dashboard
 app.use('/stats', dashboardRouter);
+
+// send email
+app.use('/sendEmail', sendEmailRouter);
 
 // Start server
 app.listen(PORT, () => {
