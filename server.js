@@ -1,0 +1,261 @@
+const express = require('express');
+const admin = require('firebase-admin');
+const app = express();
+const port = 3001; // Server sẽ chạy ở cổng 3000
+
+// 1. Cấu hình Firebase
+// Bạn nhớ phải có file serviceAccountKey.json nằm cùng thư mục
+const serviceAccount = require('./serviceAccountKey.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
+
+app.use(express.json());
+
+// 2. API Lấy dữ liệu (Thay thế node Firestore Get All)
+
+// API lấy dữ liệu đầu vào từ PreROITracking
+app.get('/api/get-roi-data', async (req, res) => {
+  try {
+    // 1. Kết nối vào collection PreROITracking
+    const snapshot = await db.collection('PreROITracking').get();
+    
+    // 2. Kiểm tra nếu không có dữ liệu
+    if (snapshot.empty) {
+      return res.status(404).json({ message: "Không tìm thấy dữ liệu nào." });
+    }
+
+    // 3. Lặp qua từng document để lấy field
+    const data = snapshot.docs.map(doc => {
+      const d = doc.data();
+      return {
+        id: doc.id, // Lấy ID của document (thường trùng với CampaignID hoặc tên doc)
+        campaign: d.CampaignID || d.campaign, // Fallback nếu tên field không nhất quán
+        source: d.Source || d.source,
+        cost: Number(d.Cost || d.cost || 0),
+        revenue: Number(d.Revenue || d.revenue || 0),
+        leads: Number(d.Leads || d.leads || 0),
+        traffic: Number(d.Traffic || d.traffic || 0)
+      };
+    });
+
+    // 4. Trả về kết quả JSON
+    res.json(data);
+
+  } catch (error) {
+    console.error("Lỗi lấy dữ liệu:", error);
+    res.status(500).send(error.message);
+  }
+});
+
+// --- Helper Function: Chuyển đổi số an toàn (giống n8n) ---
+function toNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+// --- API: Tính toán Conversion Rate ---
+// Method: POST (Vì cần gửi dữ liệu lên để tính)
+// URL: /api/calculate-conversion
+app.post('/api/calculate-conversion', (req, res) => {
+  try {
+    // Nhận dữ liệu từ Body (n8n gửi sang)
+    const data = req.body;
+
+    // 1. Áp dụng logic chuẩn hóa dữ liệu (như code bạn gửi)
+    const campaign = data.campaign || data.Campaign || data.CampaignID || "Unknown";
+    const source   = data.source   || data.Source   || data.channel || "Other";
+    
+    // Dùng hàm toNum để đảm bảo không bị lỗi NaN
+    const cost     = toNum(data.cost    || data.Cost);
+    const revenue  = toNum(data.revenue || data.Revenue);
+    const leads    = toNum(data.leads   || data.Leads);
+    const traffic  = toNum(data.traffic || data.Traffic);
+
+    // 2. Tính toán Conversion Rate
+    // Công thức: Nếu traffic > 0 thì chia, ngược lại bằng 0
+    const raw_rate = traffic > 0 ? leads / traffic : 0;
+
+    // Làm tròn 4 chữ số thập phân
+    const conversion_rate = Math.round(raw_rate * 10000) / 10000;
+
+    // 3. Trả về kết quả JSON hoàn chỉnh
+    res.json({
+      campaign,
+      source,
+      leads,
+      cost,
+      revenue,
+      traffic,
+      conversion_rate
+    });
+
+  } catch (error) {
+    console.error("Lỗi tính toán:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- API: Lưu dữ liệu vào collection ROITracking ---
+// Method: POST
+// URL: /api/save-roi-tracking
+app.post('/api/save-roi-tracking', async (req, res) => {
+  try {
+    const data = req.body;
+
+    // 1. Kiểm tra xem có tên chiến dịch không (để làm ID)
+    if (!data.campaign) {
+      return res.status(400).json({ status: 'error', message: "Thiếu trường 'campaign' (bắt buộc)." });
+    }
+
+    // 2. Chuẩn bị object dữ liệu (đảm bảo đúng kiểu số)
+    const docData = {
+      campaign: data.campaign,
+      source: data.source || "Unknown",
+      leads: Number(data.leads || 0),
+      cost: Number(data.cost || 0),
+      revenue: Number(data.revenue || 0),
+      traffic: Number(data.traffic || 0),
+      conversion_rate: Number(data.conversion_rate || 0),
+      last_updated: admin.firestore.FieldValue.serverTimestamp() // Tự động thêm thời gian lưu
+    };
+
+    // 3. Lưu vào Firestore
+    // .doc(data.campaign): Dùng tên chiến dịch làm ID luôn cho dễ tìm
+    // { merge: true }: Nếu đã có thì cập nhật, chưa có thì tạo mới (Upsert)
+    await db.collection('ROITracking').doc(data.campaign).set(docData, { merge: true });
+
+    // 4. Trả về kết quả thành công
+    res.json({
+      status: 'success',
+      message: `Đã lưu thành công chiến dịch: ${data.campaign}`,
+      saved_data: docData
+    });
+
+  } catch (error) {
+    console.error("Lỗi khi lưu:", error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// --- API: Tính ROI (Fallback khi AI lỗi) ---
+// Method: POST
+// URL: /api/calculate-roi
+app.post('/api/calculate-roi', (req, res) => {
+  try {
+    const data = req.body;
+
+    // 1. Hàm chuyển đổi số (giống hệt code cũ)
+    const toNum = (v) => {
+        const n = Number(v);
+        return isNaN(n) ? 0 : n;
+    };
+
+    // 2. Lấy dữ liệu từ Body (n8n gửi sang)
+    // Lưu ý: data.campaign có thể viết hoa hoặc thường tùy vào node trước đó trả về
+    const campaign = data.campaign || data.Campaign || "Unknown";
+    const source   = data.source   || data.Source   || "Other";
+    const cost     = toNum(data.cost || data.Cost);
+    const revenue  = toNum(data.revenue || data.Revenue);
+
+    // 3. Tính toán ROI
+    // Công thức: (Doanh thu - Chi phí) / Chi phí
+    const raw_roi = cost > 0 ? (revenue - cost) / cost : 0;
+    
+    // Làm tròn 4 chữ số thập phân
+    const roi = Math.round(raw_roi * 10000) / 10000;
+
+    // 4. Đánh giá (Interpretation)
+    const interpretation = roi > 0.1 ? "Hiệu quả" : "Chưa hiệu quả";
+
+    // 5. Trả về kết quả JSON
+    res.json({
+      ...data, // Trả lại toàn bộ dữ liệu gốc
+      campaign,
+      source,
+      cost,
+      revenue,
+      roi,
+      interpretation
+    });
+
+  } catch (error) {
+    console.error("Lỗi tính ROI:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// --- API: Tạo nội dung báo cáo (Text & HTML) ---
+// Method: POST
+// URL: /api/generate-report
+app.post('/api/generate-report', (req, res) => {
+  try {
+    const d = req.body;
+
+    // 1. Hàm chuyển đổi số an toàn (Helper)
+    const toNum = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    // 2. Lấy dữ liệu & Chuẩn hóa (Logic y hệt n8n)
+    // Ưu tiên chữ thường -> fallback chữ hoa -> fallback mặc định
+    const campaign = d.campaign || d.Campaign || d.CampaignName || "Unknown";
+    const interpretation = d.interpretation || "Chưa xác định";
+    const cost = toNum(d.cost || d.Cost);
+    const revenue = toNum(d.revenue || d.Revenue);
+
+    // 3. Tính ROI
+    // Nếu client gửi roi lên thì lấy, nếu không thì tự tính
+    let roi;
+    if (d.roi !== undefined && d.roi !== null) {
+      roi = toNum(d.roi);
+    } else {
+      // Công thức: (Revenue - Cost) / Cost
+      roi = cost > 0 ? Math.round(((revenue - cost) / cost) * 10000) / 10000 : 0;
+    }
+
+    // 5. Tạo nội dung báo cáo dạng TEXT (để gửi tin nhắn thường)
+    const textBody = `
+Báo cáo ROI cho ${campaign}
+Chi phí: ${cost}
+Doanh thu: ${revenue}
+ROI: ${roi}
+Đánh giá: ${interpretation}
+`.trim(); // .trim() để xóa dòng trống thừa ở đầu/cuối
+
+    // 6. Tạo nội dung báo cáo dạng HTML (để gửi Email hoặc Telegram mode HTML)
+    const htmlBody = `
+<h2>Báo cáo ROI cho ${campaign}</h2>
+<ul>
+  <li>Chi phí: ${cost}</li>
+  <li>Doanh thu: ${revenue}</li>
+  <li>ROI: ${roi}</li>
+  <li>Đánh giá: <strong>${interpretation}</strong></li>
+</ul>
+`;
+
+    // 7. Trả về kết quả JSON
+    res.json({
+      campaign,
+      cost,
+      revenue,
+      roi,
+      interpretation,
+      email_subject: `Báo cáo ROI - ${campaign}`,
+      email_body_text: textBody,
+      email_body_html: htmlBody
+    });
+
+  } catch (error) {
+    console.error("Lỗi tạo báo cáo:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Backend đang chạy tại http://localhost:${port}`);
+});
