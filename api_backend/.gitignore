@@ -1,0 +1,8 @@
+# Bỏ qua các thư viện không cần thiết
+node_modules/
+
+# Bỏ qua file chìa khóa BẢO MẬT
+serviceAccountKey.json
+
+# Bỏ qua các file log
+*.log

@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>iPhone 17 – Ưu đãi đặt biệt</title>
+
+  <style>
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    :root {
+      --bg: #000000;
+      --fg: #eaeaea;
+      --accent: #8cd3ff;
+      --muted: #9ca3af;
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      height:100%; margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto;
+      background:#000;
+      color:var(--fg);
+    }
+
+    /* Background ánh sáng */
+    .bg-aurora{
+      position:fixed; inset:-20vmax; z-index:-1;
+      background:radial-gradient(800px 600px at 60% 20%,rgba(140,211,255,0.25),rgba(0,0,0,0));
+      filter:blur(80px); opacity:.45;
+      animation:gradientMove 10s ease infinite;
+    }
+
+    .wrap{max-width:1100px;margin:0 auto;padding:28px}
+
+    /* Hero */
+    .hero{
+      display:grid; gap:22px; margin:40px 0; padding:30px;
+      border-radius:26px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.06);
+      backdrop-filter:blur(12px);
+    }
+
+    h1{font-size:clamp(32px,3.5vw,52px);margin:0;font-weight:700;}
+    .sub{color:var(--muted);font-size:17px;line-height:1.6}
+
+    .cta{
+      display:inline-flex;align-items:center;gap:10px;
+      background:var(--accent);color:#000;
+      padding:14px 22px;border-radius:14px;
+      font-size:17px;font-weight:700;
+      text-decoration:none;border:none;cursor:pointer;
+      transition:transform .12s ease;
+    }
+    .cta:hover{transform:translateY(-2px)}
+
+    /* Form */
+    .card{
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.05);
+      border-radius:20px;padding:26px;
+    }
+
+    input[type=text],input[type=email]{
+      width:100%;padding:12px 14px;
+      background:#0b0b0b;
+      border:1px solid #2a2a2a;
+      border-radius:12px;color:var(--fg);
+      outline:none;
+    }
+
+    input[type=text]:focus,input[type=email]:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(140,211,255,0.15);
+    }
+
+    label{font-size:15px;color:var(--muted);}
+
+    .illus img{
+      width:330px; max-width:90%;
+      animation:floaty 6s ease-in-out infinite;
+      filter:drop-shadow(0 20px 50px rgba(140,211,255,0.25));
+    }
+
+    .ok{color:#4ade80;}
+    .err{color:#f87171;}
+
+    pre.jsonbox{
+      background:#0a0a0a;
+      color:#8cd3ff;
+      font-size:13px;
+      padding:10px 12px;border-radius:10px;
+      border:1px solid #1f1f1f;
+      white-space:pre-wrap;
+      word-break:break-all;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-aurora"></div>
+
+  <div class="wrap">
+    <header class="hero">
+      <div class="pill" style="font-size:14px;color:var(--muted);">Ưu Đãi • Đặt biệt giảm giá 20%</div>
+
+      <h1>iPhone 17 – Giảm giá sâu 20%<br/>Nhận Ưu Đãi Độc Quyền</h1>
+      <p class="sub">Nhập thông tin để giữ suất ưu đãi iPhone 17 – số lượng giới hạn.</p>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:28px">
+        <!-- <button id="ctaTop" class="cta">Đặt trước iPhone 17</button> -->
+
+        <div class="illus">
+          <!-- Bạn thay link ảnh tuỳ thích -->
+          <img src="https://cdn.idealo.com/folder/Product/207702/1/207702129/s10_produktbild_max/apple-iphone-17-256gb-lavender.jpg" alt="iPhone 17" />
+        </div>
+      </div>
+    </header>
+
+    <!-- FORM -->
+    <section>
+      <div class="card">
+        <h2>Đăng ký giữ ưu đãi</h2>
+
+        <form id="leadForm" class="row" autocomplete="on">
+          <div>
+            <label>Họ và tên</label>
+            <input id="name" name="name" type="text" placeholder="Nguyễn Văn A" />
+          </div>
+
+          <div>
+            <label>Email <span class="muted">(bắt buộc)</span></label>
+            <input id="email" name="email" type="email" required placeholder="ban@vidu.com" />
+          </div>
+
+          <div>
+            <label>
+              <input id="consent" type="checkbox"/>
+              Tôi đồng ý nhận thông tin ưu đãi & cập nhật về iPhone 17.
+            </label>
+          </div>
+
+          <!-- Hidden tracking -->
+          <input type="hidden" name="client_id" id="client_id" />
+          <input type="hidden" name="session_id" id="session_id" />
+          <input type="hidden" name="referrer" id="referrer" />
+          <input type="hidden" name="user_agent" id="user_agent" />
+
+          <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+            <button id="submitBtn" class="cta" type="submit">Giữ ưu đãi</button>
+            <small id="status" class="muted"></small>
+          </div>
+
+          <pre id="jsonDebug" class="jsonbox" style="display:none"></pre>
+        </form>
+      </div>
+    </section>
+
+    <footer style="margin:40px 0;opacity:.8;text-align:center">
+      <small class="muted">© 2025 iPhone 17 Pre-order Landing Page</small>
+    </footer>
+  </div>
+
+<script>
+/* ======================== CONFIG ======================== */
+const CONFIG = { LEADS_ENDPOINT: "http://103.75.183.194:5678/webhook/lp-leads" };
+
+/* ======================== HELPERS ======================== */
+const $ = (id)=>document.getElementById(id);
+const safe = (s)=>String(s??'').replace(/</g,'&lt;');
+
+/* (Các phần tracking client_id, session_id, referrer giữ nguyên code của bạn — thêm lại vào đây nếu trước đó có) */
+
+/* ======================== SUBMIT FORM ======================== */
+const form = document.getElementById('leadForm');
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+
+  const statusEl = $("status");
+  statusEl.textContent = "Đang gửi...";
+  $("submitBtn").disabled = true;
+
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  if(!data.email){
+    statusEl.textContent="Vui lòng nhập email";
+    $("submitBtn").disabled = false;
+    return;
+  }
+
+  try{
+    const res = await fetch(CONFIG.LEADS_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ...data,
+        consent: document.getElementById('consent').checked,
+        source_lp: location.hostname
+      })
+    });
+
+    let j = {};
+    try { j = await res.json(); } catch(_){}
+
+    const msg = j.message || j.reason || "";
+
+    if (j.status === 'ok') {
+      statusEl.innerHTML = '<span class="ok">Đăng ký thành công!</span>';
+      form.reset();
+    }
+    else if (j.status === 'error' && msg) {
+      statusEl.innerHTML = `<span class="err">${safe(msg)}</span>`;
+    }
+    else if (res.ok && (res.status === 204 || Object.keys(j).length === 0)) {
+      statusEl.innerHTML = '<span class="ok">Đăng ký thành công!</span>';
+      form.reset();
+    }
+    else {
+      statusEl.innerHTML = '<span class="err">Có lỗi xảy ra, thử lại sau.</span>';
+    }
+
+  }catch(err){
+    statusEl.innerHTML = '<span class="err">Không thể kết nối máy chủ.</span>';
+  }finally{
+    $("submitBtn").disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>
