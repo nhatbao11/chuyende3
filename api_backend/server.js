@@ -8,6 +8,7 @@ const updateLeadsRouter = require('./routes/updateLeads.js');
 const generateEmailRouter = require('./routes/generateEmail.js');
 const trackingRouter = require('./routes/tracking.js');
 const dashboardRouter = require('./routes/dashboard.js');
+const salesRouter = require('./routes/sales.js');
 
 const app = express();
 app.use(express.json());
@@ -35,6 +36,9 @@ app.use('/stats', dashboardRouter);
 
 // send email
 app.use('/sendEmail', sendEmailRouter);
+
+// detail product
+app.use('/shop', salesRouter);
 
 // Start server
 app.listen(PORT, () => {

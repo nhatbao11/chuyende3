@@ -3,110 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Chart</title>
+    <title>Thống kê Email Campaign</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* CSS để số lượng hiển thị đẹp hơn */
-        .count-badge {
-            font-size: 0.8em;
-            margin-left: 5px;
-            background-color: #fff;
-            color: #333;
-            border: 1px solid #ccc;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .badge-status { min-width: 80px; padding: 8px; font-weight: 600; }
+        .yes-badge { background-color: #28a745; color: white; } /* Xanh lá */
+        .no-badge { background-color: #e9ecef; color: #6c757d; border: 1px solid #ced4da; } /* Xám nhạt */
     </style>
 </head>
 <body class="bg-light">
     <div class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary">Email Customer Action Dashboard</h2>
-            <button onclick="window.location.reload()" class="btn btn-outline-primary btn-sm">Refresh</button>
+            <h2 class="text-primary fw-bold">Email Customer Action Dashboard</h2>
+            <button onclick="window.location.reload()" class="btn btn-outline-primary">Refresh</button>
         </div>
         
         <div class="row mb-4">
             <div class="col-md-4">
-                <div class="card text-white bg-primary h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Total leads</h5>
-                        <h1 class="display-4 fw-bold"><%= totalLeads %></h1>
+                <div class="card text-white bg-primary h-100 shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <h5 class="card-title text-uppercase opacity-75">Total leads</h5>
+                        <h1 class="display-3 fw-bold"><%= totalLeads %></h1>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-white bg-success h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Total leads open</h5>
-                        <h1 class="display-4 fw-bold"><%= totalOpens %></h1>
+                <div class="card text-white bg-success h-100 shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <h5 class="card-title text-uppercase opacity-75">Total leads open</h5>
+                        <h1 class="display-3 fw-bold"><%= totalOpens %></h1>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card text-white bg-warning text-dark h-100 shadow-sm">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Total leads click</h5>
-                        <h1 class="display-4 fw-bold"><%= totalClicks %></h1>
+                <div class="card text-white bg-warning text-dark h-100 shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <h5 class="card-title text-uppercase opacity-75">Total leads click</h5>
+                        <h1 class="display-3 fw-bold"><%= totalClicks %></h1>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="py-3 ps-3">Name / Email</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Opened?</th> <th class="text-center">Clicked?</th> <th class="pe-3">Last action time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% leads.forEach(function(lead) { %>
-                                <tr>
-                                    <td class="ps-3">
-                                        <strong><%= lead.name || 'No Name' %></strong><br>
-                                        <span class="text-muted small"><%= lead.email %></span>
-                                    </td>
-                                    
-                                    <td class="text-center">
-                                        <span class="badge rounded-pill <%= lead.status === 'OLD' ? 'bg-secondary' : 'bg-danger' %>">
-                                            <%= lead.status %>
-                                        </span>
-                                    </td>
-                                    
-                                    <td class="text-center">
-                                        <% if (lead.hasOpened || lead.open_count > 0) { %>
-                                            <span class="badge bg-success">YES</span>
-                                            <span class="badge rounded-pill count-badge" title="Số lần mở">
-                                                <%= lead.open_count || 1 %>
-                                            </span>
-                                        <% } else { %>
-                                            <span class="badge bg-secondary bg-opacity-50 text-dark">NO</span>
-                                        <% } %>
-                                    </td>
-
-                                    <td class="text-center">
-                                        <% if (lead.hasClicked || lead.click_count > 0) { %>
-                                            <span class="badge bg-warning text-dark">YES</span>
-                                            <span class="badge rounded-pill count-badge" title="Số lần click">
-                                                <%= lead.click_count || 1 %>
-                                            </span>
-                                        <% } else { %>
-                                            <span class="badge bg-secondary bg-opacity-50 text-dark">NO</span>
-                                        <% } %>
-                                    </td>
-
-                                    <td class="pe-3">
-                                        <small class="text-muted">
-                                            <%= lead.lastInteractionTime ? new Date(lead.lastInteractionTime).toLocaleString('vi-VN') : '-' %>
-                                        </small>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
+        <div class="card shadow border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <div class="row fw-bold">
+                    <div class="col-4">Name / Email</div>
+                    <div class="col-2 text-center">Sent Email?</div> <div class="col-2 text-center">Opened?</div>
+                    <div class="col-2 text-center">Clicked?</div>
+                    <div class="col-2">Last action time</div>
                 </div>
+            </div>
+            <div class="card-body p-0">
+                <% leads.forEach(function(lead) { %>
+                    <div class="row p-3 border-bottom align-items-center m-0 hover-effect">
+                        
+                        <div class="col-4">
+                            <div class="fw-bold text-dark"><%= lead.name || 'No Name' %></div>
+                            <div class="text-muted small"><%= lead.email %></div>
+                        </div>
+
+                        <div class="col-2 text-center">
+                            <% if (lead.status === 'OLD') { %>
+                                <span class="badge bg-primary badge-status">YES</span>
+                            <% } else { %>
+                                <span class="badge bg-secondary badge-status">NO</span>
+                            <% } %>
+                        </div>
+
+                        <div class="col-2 text-center">
+                            <% if (lead.hasOpened) { %>
+                                <span class="badge yes-badge badge-status">YES</span>
+                            <% } else { %>
+                                <span class="badge no-badge badge-status">NO</span>
+                            <% } %>
+                        </div>
+
+                        <div class="col-2 text-center">
+                            <% if (lead.hasClicked) { %>
+                                <span class="badge bg-warning text-dark badge-status">YES</span>
+                            <% } else { %>
+                                <span class="badge no-badge badge-status">NO</span>
+                            <% } %>
+                        </div>
+
+                        <div class="col-2 text-muted small">
+                            <%= lead.lastInteractionTime ? new Date(lead.lastInteractionTime).toLocaleString('vi-VN') : '-' %>
+                        </div>
+                    </div>
+                <% }); %>
             </div>
         </div>
     </div>
