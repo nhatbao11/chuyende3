@@ -4,41 +4,43 @@ const db = require('../db.js');
 
 router.get('/', async (req, res) => {
   try {
-    // 1. Lấy danh sách Leads từ Firestore
     const leadsSnapshot = await db.collection('leads').get();
     const leads = [];
 
-    // Biến để tính tổng cho cả chiến dịch
-    let totalOpens = 0;
-    let totalClicks = 0;
+    // Biến đếm số NGƯỜI (Unique)
+    let totalUniqueOpens = 0;
+    let totalUniqueClicks = 0;
 
     leadsSnapshot.forEach(doc => {
       const data = doc.data();
 
-      if (data.open_count && data.open_count > 0) {
-        totalOpens += 1; 
-      }
+      // Logic: Chỉ cần lớn hơn 0 là tính 1 người
+      const hasOpened = (data.open_count && data.open_count > 0);
+      const hasClicked = (data.click_count && data.click_count > 0);
 
-      if (data.click_count && data.click_count > 0) {
-        totalClicks += 1;
+      if (hasOpened) totalUniqueOpens++;
+      if (hasClicked) totalUniqueClicks++;
+
+      // Xử lý thời gian
+      let timeDisplay = null;
+      if (data.last_activity_at && typeof data.last_activity_at.toDate === 'function') {
+          timeDisplay = data.last_activity_at.toDate();
       }
 
       leads.push({
         id: doc.id,
         ...data,
-        // Đảm bảo luôn có giá trị mặc định để không lỗi giao diện
-        open_count: data.open_count || 0,
-        click_count: data.click_count || 0,
-	lastInteractionTime: (data.last_activity_at && data.last_activity_at.toDate) ? data.last_activity_at.toDate() : null
+        hasOpened: hasOpened,   // Chỉ cần trả về True/False
+        hasClicked: hasClicked, // Chỉ cần trả về True/False
+        lastInteractionTime: timeDisplay
       });
     });
 
-    // 3. Trả dữ liệu ra file giao diện (stats.ejs)
     res.render('stats', {
       leads: leads,
       totalLeads: leads.length,
-      totalOpens: totalOpens,   // Tổng số lần mở của tất cả mọi người
-      totalClicks: totalClicks  // Tổng số lần click của tất cả mọi người
+      totalOpens: totalUniqueOpens,  // Số người mở
+      totalClicks: totalUniqueClicks // Số người click
     });
 
   } catch (error) {
