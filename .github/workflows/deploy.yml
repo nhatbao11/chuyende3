@@ -1,6 +1,6 @@
 name: Deploy LP Backend from landing-page branch
 
-# Kích hoạt Workflow khi có push lên nhánh 'landing-page'
+# Kích hoạt Workflow khi có push lên nhánh 'landing-page.'
 on:
   push:
     branches: [ "landing-page" ] 
