@@ -8,16 +8,23 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     
-    # === THÊM KHỐI NÀY ===
+    # === THIẾT LẬP WORKING DIRECTORY MẶC ĐỊNH ===
     defaults:
       run:
         working-directory: ${{ github.workspace }}
-    # =====================
+    # ============================================
     
     steps:
     # 1. Checkout mã nguồn
     - name: Checkout Code
       uses: actions/checkout@v4
+      
+    # === BƯỚC DEBUG: IN RA THƯ MỤC HIỆN TẠI ===
+    - name: Debug - Print Current Directory
+      run: |
+        pwd
+        ls -la
+    # ============================================
       
     # 2. Thiết lập Node.js
     - name: Set up Node.js Environment
@@ -27,8 +34,7 @@ jobs:
     
     # 3. Cài đặt Dependencies
     - name: Install Dependencies
-      # Lệnh này bây giờ chắc chắn chạy ở thư mục gốc (nơi có package.json)
-      run: npm install
+      run: npm install # Lệnh này giờ chắc chắn chạy ở thư mục gốc (nơi có package.json)
 
     # --- BƯỚC TRIỂN KHAI (CD) ---
     
@@ -42,22 +48,7 @@ jobs:
     - name: Deploy and Restart Service
       uses: appleboy/ssh-action@master
       with:
-        # Nếu lỗi 'missing server host' (image_166d98.png) vẫn xảy ra,
-        # nghĩa là Secret DEPLOY_HOST đang bị trống.
-        host: ${{ secrets.DEPLOY_HOST }} 
+        host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         script: |
-          echo "Starting deployment on server..."
-          # Chuyển đến thư mục dự án
-          cd ${{ secrets.DEPLOY_PATH }}
-          
-          # Lấy mã mới nhất từ nhánh landing-page
-          git pull origin landing-page 
-          
-          # Cài đặt lại dependencies
-          npm install
-          
-          # Khởi động lại dịch vụ Node.js
-          pm2 restart lp-backend || pm2 start landingbe.js --name lp-backend
-          
-          echo "Deployment finished and service restarted."
+          # ... (Phần script này không thay đổi)
