@@ -1,7 +1,7 @@
 {
   "name": "lp-backend",
   "version": "1.0.0",
-  "description": "Backend for landing page lead generation",
+  "description": "Backend for landing page lead generation.",
   "main": "landingbe.js",
   "type": "module",
   "scripts": {
