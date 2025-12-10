@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>iPhone 17 – Ưu đãi đặt biệt</title>
+  <title>Bàn phím cơ X Pro – Ưu đãi đặc biệt</title>
 
   <style>
     @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
@@ -104,22 +104,18 @@
 
   <div class="wrap">
     <header class="hero">
-      <div class="pill" style="font-size:14px;color:var(--muted);">Ưu Đãi • Đặt biệt giảm giá 20%</div>
+      <div class="pill" style="font-size:14px;color:var(--muted);">Ưu Đãi • Bàn phím cơ cao cấp</div>
 
-      <h1>iPhone 17 – Giảm giá sâu 20%<br/>Nhận Ưu Đãi Độc Quyền</h1>
-      <p class="sub">Nhập thông tin để giữ suất ưu đãi iPhone 17 – số lượng giới hạn.</p>
+      <h1>Bàn phím cơ X Pro – Cơ hội nhận ngay<br/>Ưu Đãi Độc Quyền 50%</h1>
+      <p class="sub">Nhập thông tin để giữ suất ưu đãi cho Bàn phím cơ X Pro – số lượng giới hạn.</p>
 
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:28px">
-        <!-- <button id="ctaTop" class="cta">Đặt trước iPhone 17</button> -->
-
         <div class="illus">
-          <!-- Bạn thay link ảnh tuỳ thích -->
-          <img src="https://cdn.idealo.com/folder/Product/207702/1/207702129/s10_produktbild_max/apple-iphone-17-256gb-lavender.jpg" alt="iPhone 17" />
+          <img src="https://img4.thuthuatphanmem.vn/uploads/2020/12/26/anh-ban-phim-co-dep_033839277.jpg" alt="Bàn phím cơ X Pro" />
         </div>
       </div>
     </header>
 
-    <!-- FORM -->
     <section>
       <div class="card">
         <h2>Đăng ký giữ ưu đãi</h2>
@@ -138,11 +134,10 @@
           <div>
             <label>
               <input id="consent" type="checkbox"/>
-              Tôi đồng ý nhận thông tin ưu đãi & cập nhật về iPhone 17.
+              Tôi đồng ý nhận thông tin ưu đãi & cập nhật về Bàn phím cơ X Pro.
             </label>
           </div>
 
-          <!-- Hidden tracking -->
           <input type="hidden" name="client_id" id="client_id" />
           <input type="hidden" name="session_id" id="session_id" />
           <input type="hidden" name="referrer" id="referrer" />
@@ -159,21 +154,50 @@
     </section>
 
     <footer style="margin:40px 0;opacity:.8;text-align:center">
-      <small class="muted">© 2025 iPhone 17 Pre-order Landing Page</small>
+      <small class="muted">© 2025 Bàn phím cơ X Pro Pre-order Landing Page</small>
     </footer>
   </div>
 
 <script>
 /* ======================== CONFIG ======================== */
-const CONFIG = { LEADS_ENDPOINT: "http://103.75.183.194:5678/webhook/lp-leads" };
+const CONFIG = { 
+    LEADS_ENDPOINT: "http://103.75.183.194:5678/webhook/lp-leads",
+    // Vẫn giữ nguyên địa chỉ backend, không thay đổi chức năng
+    TRAFFIC_ENDPOINT: "http://103.75.183.194:8080/traffic/log" 
+};
 
-/* ======================== HELPERS ======================== */
+/* ======================== HELPERS (Sửa đổi) ======================== */
 const $ = (id)=>document.getElementById(id);
 const safe = (s)=>String(s??'').replace(/</g,'&lt;');
 
-/* (Các phần tracking client_id, session_id, referrer giữ nguyên code của bạn — thêm lại vào đây nếu trước đó có) */
+// Hàm mới: Đọc tham số URL
+const getUrlParam = (name) => new URLSearchParams(window.location.search).get(name);
 
-/* ======================== SUBMIT FORM ======================== */
+
+/* ======================== TRAFFIC LOGGING (COUNT BY CAMPAIGN) ======================== */
+const logTraffic = async () => {
+    if (!CONFIG.TRAFFIC_ENDPOINT) return;
+
+    // Lấy giá trị utm_campaign từ URL
+    const campaignName = getUrlParam('utm_campaign') || ''; 
+
+    if (campaignName === '') {
+        console.log('No utm_campaign found, skipping traffic log.');
+        return; // KHÔNG LOG nếu không có campaign
+    }
+
+    try {
+        await fetch(CONFIG.TRAFFIC_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ campaign_name: campaignName }) // <-- GỬI TÊN CAMPAIGN
+        });
+    } catch (e) {
+        console.warn('Could not log traffic:', e);
+    }
+};
+
+/* ======================== SUBMIT FORM (Giữ nguyên) ======================== */
 const form = document.getElementById('leadForm');
 
 form.addEventListener('submit', async (e)=>{
@@ -192,6 +216,7 @@ form.addEventListener('submit', async (e)=>{
   }
 
   try{
+    // *** Cần lấy UTM từ URL và gửi kèm nếu cần, nhưng hiện tại BE tự fake/lấy UTM từ query ***
     const res = await fetch(CONFIG.LEADS_ENDPOINT, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -228,6 +253,24 @@ form.addEventListener('submit', async (e)=>{
     $("submitBtn").disabled = false;
   }
 });
+
+/* ======================== RUN ON LOAD ======================== */
+document.addEventListener('DOMContentLoaded', () => {
+    // Gọi hàm đếm lượt truy cập khi trang tải xong
+    logTraffic(); 
+});
+</script>
+<script>
+(function () {
+    const url = new URL(window.location.href);
+    const campaign = url.searchParams.get("utm_campaign") || "unknown_campaign";
+
+    fetch("http://103.75.183.194:8080/traffic/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_name: campaign })
+    }).catch(() => {});
+})();
 </script>
 
 </body>

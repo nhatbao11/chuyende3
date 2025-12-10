@@ -17,6 +17,8 @@ const PORT = process.env.PORT || 8080;
 const SHARED_SECRET = process.env.N8N_SHARED_SECRET || process.env.SHARED_SECRET || '';
 const SERVICE_ACCOUNT_ENV = process.env.GOOGLE_APPLICATION_CREDENTIALS || '';
 
+// *** HẰNG SỐ CŨ KHÔNG CẦN THIẾT CHO LOGIC MỚI: const TRAFFIC_COUNT_DOC_ID = '...'; 
+
 if (!SERVICE_ACCOUNT_ENV) {
   console.error('ERROR: GOOGLE_APPLICATION_CREDENTIALS not set in env. Provide path or raw JSON.');
   process.exit(1);
@@ -53,9 +55,9 @@ const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const safeTrim = (v) => (typeof v === 'string' ? v.trim() : v);
 
 // Lists for fake values
-const UTM_SOURCES = ['facebook', 'tiktok', 'google', 'youtube', 'organic', 'newsletter'];
+const UTM_SOURCES = ['facebook', 'tiktok', 'youtube'];
 const UTM_MEDIUMS = ['cpc', 'social', 'email', 'referral', 'organic'];
-const UTM_CAMPAIGNS = ['spring_sale', 'summer_push', 'course_launch', 'evergreen'];
+const UTM_CAMPAIGNS = ['spring_sale', 'summer_push'];
 const UTM_TERMS = ['investing', 'finance', 'startup', 'learning', 'growth'];
 const UTM_CONTENTS = ['banner1', 'video_ad', 'ebook_cta', 'influencer_post'];
 const REFERRERS = [
@@ -156,6 +158,42 @@ function requireAuth(req, res, next) {
 
 // Health
 app.get('/_health', (_req, res) => res.json({ ok: true }));
+
+// *** ROUTE SỬA ĐỔI: Log Traffic theo Campaign Name ***
+app.post('/traffic/log', async (req, res) => {
+  try {
+    // Lấy campaign name từ body request
+    const campaignName = req.body.campaign_name || 'unknown_campaign'; 
+    
+    // Validation: Tạo tên campaign an toàn (chỉ chấp nhận a-z, 0-9, _)
+    const safeCampaignName = campaignName.toLowerCase().replace(/[^a-z0-9_]/g, ''); 
+    
+    // Bỏ qua nếu tên campaign rỗng sau khi làm sạch
+    if (safeCampaignName === '') {
+        return res.status(204).send(); 
+    }
+
+    const now = admin.firestore.FieldValue.serverTimestamp();
+    
+    // Tham chiếu đến document sử dụng tên campaign (safeCampaignName) làm ID
+    const countRef = db.collection('traffic').doc(safeCampaignName); 
+
+    // THAO TÁC NGUYÊN TỬ: Tăng count lên 1
+    await countRef.set({
+      count: admin.firestore.FieldValue.increment(1),
+      updated_at: now,
+      campaign_name: safeCampaignName // Lưu tên campaign để tiện tham khảo
+    }, { merge: true });
+
+    return res.status(200).json({ status: 'ok', logged: true, campaign: safeCampaignName });
+
+  } catch (err) {
+    console.error('traffic count error', err);
+    // Trả về 204 ngay cả khi lỗi để không ảnh hưởng đến frontend
+    return res.status(204).send(); 
+  }
+});
+
 
 // Main: check or create lead
 app.post('/leads/check-or-create', requireAuth, async (req, res) => {
