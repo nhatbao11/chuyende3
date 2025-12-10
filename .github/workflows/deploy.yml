@@ -1,5 +1,6 @@
 name: Deploy LP Backend from landing-page branch
 
+# Kích hoạt Workflow khi có push lên nhánh 'landing-page'
 on:
   push:
     branches: [ "landing-page" ] 
@@ -8,19 +9,21 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     
+    # Đảm bảo các lệnh NPM chạy từ thư mục gốc của mã nguồn đã được checkout
     defaults:
       run:
         working-directory: ${{ github.workspace }}
 
     steps:
-    # 1. Checkout code
+    # 1. Checkout mã nguồn
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    # 2. Debug thư mục
-    - name: Debug - Print Current Directory
+    # 2. DEBUG: Kiểm tra thư mục để xác nhận package.json có mặt (Khắc phục lỗi ENOENT)
+    - name: Debug - Print Current Directory and Files
       run: |
-        pwd
+        echo "Current path: $(pwd)"
+        echo "Files list:"
         ls -la
 
     # 3. Setup Node.js
@@ -29,33 +32,45 @@ jobs:
       with:
         node-version: "20"
 
-    # 4. Install Dependencies
+    # 4. Install Dependencies (Chạy trong thư mục gốc)
     - name: Install Dependencies
       run: npm install
 
-    # 5. (Optional) Build — nếu app bạn có build
-    # - name: Build Project
-    #   run: npm run build
-
-    # 6. Deploy via SSH
+    # --- BƯỚC TRIỂN KHAI (CD) ---
+    
+    # 5. Setup SSH Agent (Sử dụng 'key' thay vì 'ssh-private-key' nếu bạn dùng action cũ)
+    - name: Setup SSH Agent
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        
+    # 6. Triển khai lên Server và Khởi động lại dịch vụ
     - name: Deploy and Restart Service
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         port: 22
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        # Sử dụng 'key' theo cấu hình mới của appleboy/ssh-action (nếu cần)
+        key: ${{ secrets.SSH_PRIVATE_KEY }} 
+        
         script: |
-          echo ">>> Bắt đầu deploy..."
-          cd /var/www/landing-page          # <== đổi đúng thư mục server của bạn
-
-          echo ">>> Pull code mới"
-          git pull
+          echo ">>> Bắt đầu deploy lên ${{ secrets.DEPLOY_PATH }}"
+          
+          # 1. CHUYỂN ĐẾN THƯ MỤC DỰ ÁN (Sử dụng Secret đã cấu hình)
+          cd ${{ secrets.DEPLOY_PATH }} || exit 1 
+          
+          echo ">>> Pull code mới từ nhánh landing-page"
+          # 2. PULL CODE VÀ BUỘC BÁO LỖI NẾU KHÔNG THÀNH CÔNG
+          git pull origin landing-page || exit 1 
 
           echo ">>> Cài dependency nếu cần"
+          # 3. CÀI ĐẶT LẠI DEPENDENCIES TRÊN SERVER
           npm install --production
 
           echo ">>> Restart dịch vụ PM2"
-          pm2 restart landing-page || pm2 start npm --name "landing-page" -- run start
+          # 4. RESTART/START DỊCH VỤ (Giả sử PM2 app tên là lp-backend)
+          # Sử dụng tên cũ của ứng dụng PM2 bạn đã dùng trước đó
+          pm2 restart lp-backend || pm2 start landingbe.js --name lp-backend
 
           echo ">>> Deploy hoàn tất!"
