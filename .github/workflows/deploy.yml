@@ -1,9 +1,9 @@
-name: Deploy LP Backend from lp-backend branch
+name: Deploy LP Backend from landing-page branch
 
-# Kích hoạt Workflow khi có push lên nhánh 'lp-backend'
+# Kích hoạt Workflow khi có push lên nhánh 'landing-page'
 on:
   push:
-    branches: [ "lp-backend" ]
+    branches: [ "landing-page" ] 
 
 jobs:
   build_and_deploy:
@@ -21,41 +21,36 @@ jobs:
         # Đảm bảo phiên bản Node này khớp với phiên bản trên VPS của bạn
         node-version: '20' 
     
-    # 3. Cài đặt Dependencies (chạy npm install trên máy ảo GitHub)
+    # 3. Cài đặt Dependencies
     - name: Install Dependencies
       run: npm install
 
     # --- BƯỚC TRIỂN KHAI (CD) ---
     
-    # 4. Thiết lập SSH Agent để sử dụng Private Key
+    # 4. Thiết lập SSH Agent
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.9.0
       with:
-        # Sử dụng Secret Key đã lưu trữ
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
     # 5. Triển khai lên Server và Khởi động lại dịch vụ
     - name: Deploy and Restart Service
-      # Sử dụng Action để chạy lệnh SSH từ xa
       uses: appleboy/ssh-action@master
       with:
-        # Sử dụng các Secrets đã lưu trữ
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
-        # Lệnh chạy trên VPS
         script: |
           echo "Starting deployment on server..."
           # Chuyển đến thư mục dự án
           cd ${{ secrets.DEPLOY_PATH }}
           
-          # Lấy mã mới nhất từ nhánh lp-backend
-          git pull origin lp-backend
+          # Lấy mã mới nhất từ nhánh landing-page
+          git pull origin landing-page 
           
-          # Cài đặt lại dependencies (nếu có thay đổi trong package.json)
+          # Cài đặt lại dependencies
           npm install
           
           # Khởi động lại dịch vụ Node.js
-          # Giả định bạn đang dùng PM2 với tên 'lp-backend'
           pm2 restart lp-backend || pm2 start landingbe.js --name lp-backend
           
           echo "Deployment finished and service restarted."
