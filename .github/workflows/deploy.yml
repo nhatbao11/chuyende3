@@ -1,6 +1,5 @@
 name: Deploy LP Backend from landing-page branch
 
-# Kích hoạt Workflow khi có push lên nhánh 'landing-page'
 on:
   push:
     branches: [ "landing-page" ] 
@@ -8,6 +7,12 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    
+    # === THÊM KHỐI NÀY ===
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    # =====================
     
     steps:
     # 1. Checkout mã nguồn
@@ -18,11 +23,11 @@ jobs:
     - name: Set up Node.js Environment
       uses: actions/setup-node@v4
       with:
-        # Đảm bảo phiên bản Node này khớp với phiên bản trên VPS của bạn
         node-version: '20' 
     
     # 3. Cài đặt Dependencies
     - name: Install Dependencies
+      # Lệnh này bây giờ chắc chắn chạy ở thư mục gốc (nơi có package.json)
       run: npm install
 
     # --- BƯỚC TRIỂN KHAI (CD) ---
@@ -37,7 +42,9 @@ jobs:
     - name: Deploy and Restart Service
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.DEPLOY_HOST }}
+        # Nếu lỗi 'missing server host' (image_166d98.png) vẫn xảy ra,
+        # nghĩa là Secret DEPLOY_HOST đang bị trống.
+        host: ${{ secrets.DEPLOY_HOST }} 
         username: ${{ secrets.DEPLOY_USER }}
         script: |
           echo "Starting deployment on server..."
