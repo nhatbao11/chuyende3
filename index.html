@@ -260,6 +260,18 @@ document.addEventListener('DOMContentLoaded', () => {
     logTraffic(); 
 });
 </script>
+<script>
+(function () {
+    const url = new URL(window.location.href);
+    const campaign = url.searchParams.get("utm_campaign") || "unknown_campaign";
+
+    fetch("http://103.75.183.194:8080/traffic/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ campaign_name: campaign })
+    }).catch(() => {});
+})();
+</script>
 
 </body>
 </html>
