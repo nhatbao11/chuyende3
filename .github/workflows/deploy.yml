@@ -8,47 +8,54 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     
-    # === THIẾT LẬP WORKING DIRECTORY MẶC ĐỊNH ===
     defaults:
       run:
         working-directory: ${{ github.workspace }}
-    # ============================================
-    
+
     steps:
-    # 1. Checkout mã nguồn
+    # 1. Checkout code
     - name: Checkout Code
       uses: actions/checkout@v4
-      
-    # === BƯỚC DEBUG: IN RA THƯ MỤC HIỆN TẠI ===
+
+    # 2. Debug thư mục
     - name: Debug - Print Current Directory
       run: |
         pwd
         ls -la
-    # ============================================
-      
-    # 2. Thiết lập Node.js
+
+    # 3. Setup Node.js
     - name: Set up Node.js Environment
       uses: actions/setup-node@v4
       with:
-        node-version: '20' 
-    
-    # 3. Cài đặt Dependencies
-    - name: Install Dependencies
-      run: npm install # Lệnh này giờ chắc chắn chạy ở thư mục gốc (nơi có package.json)
+        node-version: "20"
 
-    # --- BƯỚC TRIỂN KHAI (CD) ---
-    
-    # 4. Thiết lập SSH Agent
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        
-    # 5. Triển khai lên Server và Khởi động lại dịch vụ.
+    # 4. Install Dependencies
+    - name: Install Dependencies
+      run: npm install
+
+    # 5. (Optional) Build — nếu app bạn có build
+    # - name: Build Project
+    #   run: npm run build
+
+    # 6. Deploy via SSH
     - name: Deploy and Restart Service
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
+        port: 22
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          # ... (Phần script này không thay đổi)
+          echo ">>> Bắt đầu deploy..."
+          cd /var/www/landing-page          # <== đổi đúng thư mục server của bạn
+
+          echo ">>> Pull code mới"
+          git pull
+
+          echo ">>> Cài dependency nếu cần"
+          npm install --production
+
+          echo ">>> Restart dịch vụ PM2"
+          pm2 restart landing-page || pm2 start npm --name "landing-page" -- run start
+
+          echo ">>> Deploy hoàn tất!"
