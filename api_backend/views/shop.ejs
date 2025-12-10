@@ -1,40 +1,232 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ưu đãi đặc biệt</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow-lg border-0">
-                    <img src="https://via.placeholder.com/600x300?text=Premium+Course" class="card-img-top" alt="Product">
-                    <div class="card-body text-center p-5">
-                        <h2 class="card-title text-primary fw-bold">Khóa học Marketing Automation</h2>
-                        <p class="card-text text-muted my-3">
-                            Làm chủ n8n, Firebase và Node.js chỉ trong 30 ngày. 
-                            Tự động hóa doanh nghiệp của bạn ngay hôm nay!
-                        </p>
-                        
-                        <h1 class="display-4 fw-bold text-danger mb-4">499.000đ <small class="text-muted fs-6 text-decoration-line-through">2.000.000đ</small></h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bàn phím cơ E-Dra EK368L - Ưu đãi đặc biệt</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #f4f6f8;
+        font-family: "Segoe UI", sans-serif;
+      }
+      .product-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .price-tag {
+        color: #d70018;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+      .old-price {
+        color: #707070;
+        text-decoration: line-through;
+        font-size: 1.1rem;
+      }
+      .feature-box {
+        background-color: #fef2f2;
+        border: 1px solid #fabebb;
+        border-radius: 8px;
+        padding: 15px;
+      }
+      .feature-item {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      .btn-option {
+        border: 1px solid #e0e0e0;
+        background: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        width: 100%;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-option:hover {
+        border-color: #d70018;
+        color: #d70018;
+      }
+      .btn-option.active {
+        border-color: #d70018;
+        background-color: #fef2f2;
+        color: #d70018;
+        position: relative;
+      }
+      .btn-option.active::after {
+        content: "✓";
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #d70018;
+        color: white;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-buy {
+        background-color: #d70018;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 1.2rem;
+        transition: background 0.3s;
+      }
+      .btn-buy:hover {
+        background-color: #b30014;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-4 shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#"
+          ><i class="fas fa-keyboard me-2"></i> GEAR STORE</a
+        >
+      </div>
+    </nav>
 
-                        <form action="/shop/buy" method="POST">
-                            <input type="hidden" name="lead_id" value="<%= lead_id %>">
-                            <input type="hidden" name="amount" value="499000">
-                            
-                            <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold">
-                                🛒 THANH TOÁN NGAY
-                            </button>
-                        </form>
-                        
-                        <p class="mt-3 small text-muted">Thanh toán an toàn qua cổng giả lập.</p>
-                    </div>
-                </div>
+    <div class="container mb-5">
+      <div class="product-container p-4">
+        <div class="row">
+          <div class="col-md-5 mb-4">
+            <div class="position-relative text-center">
+              <img
+                src="https://product.hstatic.net/200000680839/product/39689-ban-phim-co-rainbow-gear-k104-black_6e2a76c4780249559a31b100281eae51.jpg"
+                class="img-fluid rounded border"
+                alt="E-Dra EK368L"
+              />
+              <span
+                class="position-absolute top-0 start-0 badge bg-danger m-2 px-3 py-2"
+                >-15%</span
+              >
             </div>
+            <div class="row mt-2 g-2">
+              <div class="col-3">
+                <img
+                  src="https://gongangshop.vn/wp-content/uploads/2024/05/Keyboard-trend.jpg"
+                  class="img-fluid border rounded"
+                />
+              </div>
+              <div class="col-3">
+                <img
+                  src="https://png.pngtree.com/png-vector/20250321/ourmid/pngtree-a-isolated-wirless-mechanical-keyboard-on-white-background-png-image_15836493.png"
+                  class="img-fluid border rounded"
+                />
+              </div>
+              <div class="col-3">
+                <img
+                  src="https://lacdau.com/media/lib/22-05-2023/ban-phim-co-akko-3087-rf-dragon-ball-z-goku-03.jpg"
+                  class="img-fluid border rounded"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-7">
+            <h1 class="fw-bold mb-3">
+              Bàn phím cơ E-Dra EK368L Beta Wireless (Trắng Xám)
+            </h1>
+
+            <div class="d-flex align-items-center mb-3">
+              <div class="text-warning me-2">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i>
+              </div>
+              <span class="text-muted">(12 đánh giá)</span>
+            </div>
+
+            <div class="mb-4">
+              <span class="price-tag me-3">499.000₫</span>
+              <span class="old-price">590.000₫</span>
+            </div>
+
+            <div class="mb-4">
+              <label class="fw-bold mb-2">Chọn loại Switch:</label>
+              <div class="row g-2">
+                <div class="col-4">
+                  <div class="btn-option active">
+                    <strong>Brown Switch</strong>
+                    <div class="small text-muted">Êm & Đầm</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="btn-option">
+                    <strong>Red Switch</strong>
+                    <div class="small text-muted">Nhẹ & Êm</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="btn-option">
+                    <strong>Blue Switch</strong>
+                    <div class="small text-muted">Tiếng Clicky</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="feature-box mb-4">
+              <h6 class="text-danger fw-bold mb-3">
+                <i class="fas fa-check-circle me-1"></i> TÍNH NĂNG NỔI BẬT
+              </h6>
+              <ul class="list-unstyled mb-0">
+                <li class="feature-item">
+                  <i class="fas fa-check text-danger me-2"></i> Kết nối không
+                  dây Bluetooth 5.0 + Wireless 2.4Ghz tiện lợi.
+                </li>
+                <li class="feature-item">
+                  <i class="fas fa-check text-danger me-2"></i> Keycap chất
+                  lượng cao, chống bám vân tay.
+                </li>
+                <li class="feature-item">
+                  <i class="fas fa-check text-danger me-2"></i> Sử dụng 2 pin
+                  AAA, thời lượng pin lên đến 6 tháng.
+                </li>
+                <li class="feature-item">
+                  <i class="fas fa-check text-danger me-2"></i> Thiết kế nhỏ gọn
+                  (68 phím), dễ dàng mang theo.
+                </li>
+              </ul>
+            </div>
+
+            <form action="/shop/buy" method="POST">
+              <input type="hidden" name="lead_id" value="<%= lead_id %>" />
+              <input type="hidden" name="amount" value="499000" />
+
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-buy py-3 rounded shadow">
+                  <i class="fas fa-shopping-cart me-2"></i> MUA NGAY
+                </button>
+                <p class="text-center text-muted small mt-2">
+                  <i class="fas fa-shield-alt text-success"></i> Bảo hành chính
+                  hãng 24 tháng
+                </p>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-</body>
+
+    <footer class="text-center py-4 text-muted small">
+      &copy; 2025 Gear Store Project. Demo for ROI Tracking System.
+    </footer>
+  </body>
 </html>
