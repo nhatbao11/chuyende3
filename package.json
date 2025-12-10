@@ -1,0 +1,16 @@
+{
+  "name": "lp-backend",
+  "version": "1.0.0",
+  "description": "Backend for landing page lead generation",
+  "main": "landingbe.js",
+  "type": "module",
+  "scripts": {
+    "start": "node landingbe.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.1.0"
+  }
+}
