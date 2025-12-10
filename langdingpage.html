@@ -166,19 +166,31 @@ const CONFIG = {
     TRAFFIC_ENDPOINT: "http://103.75.183.194:8080/traffic/log" 
 };
 
-/* ======================== HELPERS ======================== */
+/* ======================== HELPERS (Sửa đổi) ======================== */
 const $ = (id)=>document.getElementById(id);
 const safe = (s)=>String(s??'').replace(/</g,'&lt;');
 
-/* ======================== TRAFFIC LOGGING (COUNT ONLY) ======================== */
+// Hàm mới: Đọc tham số URL
+const getUrlParam = (name) => new URLSearchParams(window.location.search).get(name);
+
+
+/* ======================== TRAFFIC LOGGING (COUNT BY CAMPAIGN) ======================== */
 const logTraffic = async () => {
     if (!CONFIG.TRAFFIC_ENDPOINT) return;
+
+    // Lấy giá trị utm_campaign từ URL
+    const campaignName = getUrlParam('utm_campaign') || ''; 
+
+    if (campaignName === '') {
+        console.log('No utm_campaign found, skipping traffic log.');
+        return; // KHÔNG LOG nếu không có campaign
+    }
 
     try {
         await fetch(CONFIG.TRAFFIC_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({}) // Không cần gửi payload vì BE chỉ đếm
+            body: JSON.stringify({ campaign_name: campaignName }) // <-- GỬI TÊN CAMPAIGN
         });
     } catch (e) {
         console.warn('Could not log traffic:', e);
@@ -204,6 +216,7 @@ form.addEventListener('submit', async (e)=>{
   }
 
   try{
+    // *** Cần lấy UTM từ URL và gửi kèm nếu cần, nhưng hiện tại BE tự fake/lấy UTM từ query ***
     const res = await fetch(CONFIG.LEADS_ENDPOINT, {
       method:'POST',
       headers:{'Content-Type':'application/json'},

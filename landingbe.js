@@ -17,9 +17,7 @@ const PORT = process.env.PORT || 8080;
 const SHARED_SECRET = process.env.N8N_SHARED_SECRET || process.env.SHARED_SECRET || '';
 const SERVICE_ACCOUNT_ENV = process.env.GOOGLE_APPLICATION_CREDENTIALS || '';
 
-// *** HẰNG SỐ MỚI CHO CHỨC NĂNG ĐẾM TRAFFIC ***
-// Thay thế giá trị này bằng ID document đếm mà bạn đã tạo trong collection 'traffic'
-const TRAFFIC_COUNT_DOC_ID = 'WAG1XG5RXM60Ww63widr'; 
+// *** HẰNG SỐ CŨ KHÔNG CẦN THIẾT CHO LOGIC MỚI: const TRAFFIC_COUNT_DOC_ID = '...'; 
 
 if (!SERVICE_ACCOUNT_ENV) {
   console.error('ERROR: GOOGLE_APPLICATION_CREDENTIALS not set in env. Provide path or raw JSON.');
@@ -161,21 +159,33 @@ function requireAuth(req, res, next) {
 // Health
 app.get('/_health', (_req, res) => res.json({ ok: true }));
 
-// *** ROUTE MỚI: Log Traffic (Chỉ Đếm) ***
+// *** ROUTE SỬA ĐỔI: Log Traffic theo Campaign Name ***
 app.post('/traffic/log', async (req, res) => {
   try {
+    // Lấy campaign name từ body request
+    const campaignName = req.body.campaign_name || 'unknown_campaign'; 
+    
+    // Validation: Tạo tên campaign an toàn (chỉ chấp nhận a-z, 0-9, _)
+    const safeCampaignName = campaignName.toLowerCase().replace(/[^a-z0-9_]/g, ''); 
+    
+    // Bỏ qua nếu tên campaign rỗng sau khi làm sạch
+    if (safeCampaignName === '') {
+        return res.status(204).send(); 
+    }
+
     const now = admin.firestore.FieldValue.serverTimestamp();
     
-    // Tham chiếu đến document đếm duy nhất trong collection 'traffic'
-    const countRef = db.collection('traffic').doc(TRAFFIC_COUNT_DOC_ID);
+    // Tham chiếu đến document sử dụng tên campaign (safeCampaignName) làm ID
+    const countRef = db.collection('traffic').doc(safeCampaignName); 
 
     // THAO TÁC NGUYÊN TỬ: Tăng count lên 1
     await countRef.set({
       count: admin.firestore.FieldValue.increment(1),
-      updated_at: now, // Cập nhật thời gian lần cuối đếm
-    }, { merge: true }); // Dùng merge để không ghi đè các trường khác
+      updated_at: now,
+      campaign_name: safeCampaignName // Lưu tên campaign để tiện tham khảo
+    }, { merge: true });
 
-    return res.status(200).json({ status: 'ok', logged: true });
+    return res.status(200).json({ status: 'ok', logged: true, campaign: safeCampaignName });
 
   } catch (err) {
     console.error('traffic count error', err);
