@@ -3,98 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thống kê Email Campaign</title>
+    <title>Email Engagement Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .badge-status { min-width: 80px; padding: 8px; font-weight: 600; }
-        .yes-badge { background-color: #28a745; color: white; } /* Xanh lá */
-        .no-badge { background-color: #e9ecef; color: #6c757d; border: 1px solid #ced4da; } /* Xám nhạt */
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Card Styles */
+        .stat-card { border: none; border-radius: 15px; color: white; padding: 25px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .bg-gradient-purple { background: linear-gradient(45deg, #8e2de2, #4a00e0); }
+        .bg-gradient-blue { background: linear-gradient(45deg, #00b09b, #96c93d); } /* Open */
+        .bg-gradient-orange { background: linear-gradient(45deg, #f12711, #f5af19); } /* Click */
+        
+        .stat-number { font-size: 2.5rem; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 1rem; opacity: 0.9; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 3rem; opacity: 0.2; }
+
+        /* Main Content */
+        .main-card { background: white; border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .card-header-custom { padding: 20px 25px; border-bottom: 1px solid #f0f0f0; background: white; border-top-left-radius: 15px; border-top-right-radius: 15px; }
+        .card-title-custom { font-weight: 700; color: #333; font-size: 1.1rem; margin: 0; }
+        
+        /* Table Styles */
+        .table-custom th { background-color: #f8f9fa; font-size: 0.85rem; text-transform: uppercase; color: #888; font-weight: 600; padding: 15px; border-bottom: 2px solid #eee; }
+        .table-custom td { padding: 15px; vertical-align: middle; color: #555; font-weight: 500; }
+        .badge-custom { padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.75rem; }
+        .badge-sent { background-color: #e2e8f0; color: #475569; }
+        .badge-open { background-color: #dcfce7; color: #166534; }
+        .badge-click { background-color: #ffedd5; color: #9a3412; }
     </style>
 </head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary fw-bold">Email Customer Action Dashboard</h2>
-            <button onclick="window.location.reload()" class="btn btn-outline-primary">Refresh</button>
+<body>
+
+    <nav class="navbar navbar-light bg-white shadow-sm mb-5">
+        <div class="container">
+            <span class="navbar-brand fw-bold" color="#2fc0c1">
+               EMAIL CAMPAIGN MONITOR
+            </span>
+            <button onclick="window.location.reload()" class="btn btn-outline-primary btn-sm rounded-pill px-4">
+                <i class="fas fa-sync-alt me-1"></i> Làm mới
+            </button>
         </div>
-        
+    </nav>
+
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card bg-gradient-purple">
+                    <div class="stat-number"><%= totalLeads %></div>
+                    <div class="stat-label">Đã Gửi</div>
+                    <i class="fas fa-envelope stat-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card bg-gradient-blue">
+                    <div class="stat-number"><%= totalOpens %></div>
+                    <div class="stat-label">Đã Mở</div>
+                    <div class="small mt-2 opacity-75">
+                        Tỷ lệ mở: <%= totalLeads > 0 ? ((totalOpens/totalLeads)*100).toFixed(1) : 0 %>%
+                    </div>
+                    <i class="fas fa-envelope-open-text stat-icon"></i>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card bg-gradient-orange">
+                    <div class="stat-number"><%= totalClicks %></div>
+                    <div class="stat-label">Đã Click</div>
+                    <div class="small mt-2 opacity-75">
+                        Tỷ lệ Click (CTR): <%= totalOpens > 0 ? ((totalClicks/totalOpens)*100).toFixed(1) : 0 %>%
+                    </div>
+                    <i class="fas fa-mouse-pointer stat-icon"></i>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary h-100 shadow-sm border-0">
-                    <div class="card-body text-center py-4">
-                        <h5 class="card-title text-uppercase opacity-75">Total leads</h5>
-                        <h1 class="display-3 fw-bold"><%= totalLeads %></h1>
+            <div class="col-12">
+                <div class="main-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title-custom"> Phễu Chuyển Đổi</h5>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success h-100 shadow-sm border-0">
-                    <div class="card-body text-center py-4">
-                        <h5 class="card-title text-uppercase opacity-75">Total leads open</h5>
-                        <h1 class="display-3 fw-bold"><%= totalOpens %></h1>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-warning text-dark h-100 shadow-sm border-0">
-                    <div class="card-body text-center py-4">
-                        <h5 class="card-title text-uppercase opacity-75">Total leads click</h5>
-                        <h1 class="display-3 fw-bold"><%= totalClicks %></h1>
+                    <div style="height: 300px;">
+                        <canvas id="engagementChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow border-0">
-            <div class="card-header bg-dark text-white py-3">
-                <div class="row fw-bold">
-                    <div class="col-4">Name / Email</div>
-                    <div class="col-2 text-center">Sent Email?</div> <div class="col-2 text-center">Opened?</div>
-                    <div class="col-2 text-center">Clicked?</div>
-                    <div class="col-2">Last action time</div>
-                </div>
+        <div class="main-card">
+            <div class="card-header-custom">
+                <h5 class="card-title-custom">Chi Tiết Hành Vi Khách Hàng</h5>
             </div>
-            <div class="card-body p-0">
-                <% leads.forEach(function(lead) { %>
-                    <div class="row p-3 border-bottom align-items-center m-0 hover-effect">
-                        
-                        <div class="col-4">
-                            <div class="fw-bold text-dark"><%= lead.name || 'No Name' %></div>
-                            <div class="text-muted small"><%= lead.email %></div>
-                        </div>
-
-                        <div class="col-2 text-center">
-                            <% if (lead.status === 'OLD') { %>
-                                <span class="badge bg-primary badge-status">YES</span>
-                            <% } else { %>
-                                <span class="badge bg-secondary badge-status">NO</span>
-                            <% } %>
-                        </div>
-
-                        <div class="col-2 text-center">
-                            <% if (lead.hasOpened) { %>
-                                <span class="badge yes-badge badge-status">YES</span>
-                            <% } else { %>
-                                <span class="badge no-badge badge-status">NO</span>
-                            <% } %>
-                        </div>
-
-                        <div class="col-2 text-center">
-                            <% if (lead.hasClicked) { %>
-                                <span class="badge bg-warning text-dark badge-status">YES</span>
-                            <% } else { %>
-                                <span class="badge no-badge badge-status">NO</span>
-                            <% } %>
-                        </div>
-
-                        <div class="col-2 text-muted small">
-                            <%= lead.lastInteractionTime ? new Date(lead.lastInteractionTime).toLocaleString('vi-VN') : '-' %>
-                        </div>
-                    </div>
-                <% }); %>
+            <div class="table-responsive">
+                <table class="table table-custom table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Khách hàng</th>
+                            <th class="text-center">Trạng Thái Gửi</th>
+                            <th class="text-center">Hành Động Mở</th>
+                            <th class="text-center">Hành Động Click</th>
+                            <th class="text-end">Tương tác cuối</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% leads.forEach(function(lead) { %>
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark"><%= lead.name || 'Unknown' %></div>
+                                    <div class="small text-muted"><%= lead.email %></div>
+                                </td>
+                                <td class="text-center">
+                                    <% if (lead.status === 'OLD') { %>
+                                        <span class="badge badge-custom badge-sent"><i class="fas fa-check me-1"></i> Đã gửi</span>
+                                    <% } else { %>
+                                        <span class="badge badge-custom bg-secondary">Chờ gửi</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <% if (lead.hasOpened) { %>
+                                        <span class="badge badge-custom badge-open">YES</span>
+                                    <% } else { %>
+                                        <span class="badge badge-custom bg-light text-muted">NO</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <% if (lead.hasClicked) { %>
+                                        <span class="badge badge-custom badge-click">CLICKED</span>
+                                    <% } else { %>
+                                        <span class="badge badge-custom bg-light text-muted">-</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-end small text-muted">
+                                    <%= lead.lastInteractionTime ? new Date(lead.lastInteractionTime).toLocaleString('vi-VN') : 'Chưa tương tác' %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    <script>
+        const ctx = document.getElementById('engagementChart').getContext('2d');
+        
+        // Dữ liệu từ Server
+        const totalSent = <%= totalLeads %>;
+        const totalOpen = <%= totalOpens %>;
+        const totalClick = <%= totalClicks %>;
+
+        new Chart(ctx, {
+            type: 'bar', // Dùng biểu đồ cột để thể hiện phễu
+            data: {
+                labels: ['Đã Gửi', 'Đã Mở', 'Đã Click'],
+                datasets: [{
+                    label: 'Số lượng khách hàng',
+                    data: [totalSent, totalOpen, totalClick],
+                    backgroundColor: [
+                        'rgba(142, 45, 226, 0.7)', // Tím
+                        'rgba(0, 176, 155, 0.7)',  // Xanh
+                        'rgba(241, 39, 17, 0.7)'   // Cam
+                    ],
+                    borderColor: [
+                        'rgba(142, 45, 226, 1)',
+                        'rgba(0, 176, 155, 1)',
+                        'rgba(241, 39, 17, 1)'
+                    ],
+                    borderWidth: 1,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false } // Ẩn chú thích vì đã có label trục X
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 4] }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
