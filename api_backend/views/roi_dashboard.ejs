@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý ROI Chiến dịch</title>
+    <title>Dữ Liệu Chiến Dịch (Raw Data)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,20 +14,17 @@
         .bg-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .bg-blue { background: linear-gradient(135deg, #2af598 0%, #009efd 100%); }
         .bg-orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .bg-red { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #333; }
         
         .main-card { background: white; border-radius: 10px; border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .card-header-custom { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; color: #444; }
         .table-custom th { background: #f8f9fa; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; color: #888; }
-        .text-profit { color: #10b981; font-weight: bold; }
-        .text-loss { color: #ef4444; font-weight: bold; }
     </style>
 </head>
 <body>
     
     <nav class="navbar navbar-white bg-white shadow-sm mb-4">
         <div class="container-fluid px-4">
-            <span class="navbar-brand fw-bold text-primary"><i class="fas fa-chart-pie me-2"></i> MARKETING DASHBOARD</span>
+            <span class="navbar-brand fw-bold text-primary"><i class="fas fa-database me-2"></i> DATA TRACKING CENTER</span>
             <span class="text-muted small">Cập nhật lúc: <%= new Date().toLocaleTimeString('vi-VN') %></span>
         </div>
     </nav>
@@ -35,49 +32,36 @@
     <div class="container-fluid px-4">
         
         <div class="row g-4 mb-4">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card-stat bg-purple">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h2 class="fw-bold mb-0"><%= stats.orders %></h2>
-                            <span class="small opacity-75">Tổng Đơn Hàng</span>
+                            <span class="small opacity-75">Tổng Đơn Hàng (Orders)</span>
                         </div>
                         <i class="fas fa-shopping-bag fa-2x opacity-50"></i>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card-stat bg-blue">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h2 class="fw-bold mb-0"><%= stats.revenue.toLocaleString('vi-VN') %> ₫</h2>
-                            <span class="small opacity-75">Tổng Doanh Thu</span>
+                            <span class="small opacity-75">Tổng Doanh Thu (Revenue)</span>
                         </div>
                         <i class="fas fa-wallet fa-2x opacity-50"></i>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card-stat bg-orange">
                     <div class="d-flex justify-content-between">
                         <div>
                             <h2 class="fw-bold mb-0"><%= stats.cost.toLocaleString('vi-VN') %> ₫</h2>
-                            <span class="small opacity-75">Tổng Chi Phí (Cost)</span>
+                            <span class="small opacity-75">Tổng Chi Phí Quảng Cáo (Cost)</span>
                         </div>
                         <i class="fas fa-ad fa-2x opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card-stat bg-secondary">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h2 class="fw-bold mb-0 <%= stats.profit >= 0 ? 'text-success' : 'text-danger' %>" style="filter: brightness(1.5);">
-                                <%= stats.profit.toLocaleString('vi-VN') %> ₫
-                            </h2>
-                            <span class="small opacity-75">Lợi Nhuận Ròng</span>
-                        </div>
-                        <i class="fas fa-piggy-bank fa-2x opacity-50"></i>
                     </div>
                 </div>
             </div>
@@ -87,7 +71,7 @@
             <div class="col-md-8">
                 <div class="main-card h-100">
                     <div class="card-header-custom">
-                        <i class="fas fa-chart-bar me-2"></i> Hiệu Quả Doanh Thu vs Chi Phí
+                        <i class="fas fa-chart-bar me-2"></i> Tình Hình Doanh Thu & Chi Phí
                     </div>
                     <div class="card-body">
                         <canvas id="barChart" height="100"></canvas>
@@ -97,7 +81,7 @@
             <div class="col-md-4">
                 <div class="main-card h-100">
                     <div class="card-header-custom">
-                        <i class="fas fa-globe me-2"></i> Nguồn Doanh Thu (Sources)
+                        <i class="fas fa-globe me-2"></i> Phân Bổ Nguồn Doanh Thu
                     </div>
                     <div class="card-body d-flex justify-content-center align-items-center">
                         <canvas id="doughnutChart" style="max-height: 250px;"></canvas>
@@ -108,40 +92,31 @@
 
         <div class="main-card">
             <div class="card-header-custom">
-                <i class="fas fa-table me-2"></i> Chi Tiết Chiến Dịch (PreROITracking)
+                <i class="fas fa-table me-2"></i> Dữ Liệu Chi Tiết (Cho bộ phận phân tích)
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-custom mb-0 align-middle">
                     <thead>
                         <tr>
                             <th class="ps-4">Tên Chiến Dịch (ID)</th>
-                            <th class="text-center">Traffic</th>
+                            <th class="text-center">Traffic (Real-time)</th>
                             <th class="text-center">Leads</th>
                             <th class="text-center">Đơn (Orders)</th>
                             <th class="text-end">Chi Phí (Cost)</th>
                             <th class="text-end">Doanh Thu (Rev)</th>
-                            <th class="text-end">Lợi Nhuận</th>
-                            <th class="text-center">ROI</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% campaigns.forEach(camp => { %>
                             <tr>
                                 <td class="ps-4 fw-bold text-primary"><%= camp.name %></td>
-                                <td class="text-center"><%= camp.traffic %></td>
+                                <td class="text-center fw-bold text-info"><%= camp.traffic %></td>
                                 <td class="text-center"><%= camp.leads %></td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border"><%= camp.orders %></span>
                                 </td>
                                 <td class="text-end text-muted"><%= camp.cost.toLocaleString('vi-VN') %></td>
                                 <td class="text-end fw-bold"><%= camp.revenue.toLocaleString('vi-VN') %></td>
-                                <td class="text-end <%= camp.profit >= 0 ? 'text-profit' : 'text-loss' %>">
-                                    <%= camp.profit.toLocaleString('vi-VN') %>
-                                </td>
-                                <td class="text-center">
-                                    <% let roiClass = camp.profit >= 0 ? 'bg-success' : 'bg-danger'; %>
-                                    <span class="badge <%= roiClass %>"><%= ((camp.cost > 0) ? (camp.profit/camp.cost*100).toFixed(1) : 0) %>%</span>
-                                </td>
                             </tr>
                         <% }); %>
                     </tbody>
@@ -151,19 +126,17 @@
     </div>
 
     <script>
-        // Data từ EJS
+        // Data từ Server
         const labels = <%- JSON.stringify(campaigns.map(c => c.name)) %>;
         const revData = <%- JSON.stringify(campaigns.map(c => c.revenue)) %>;
         const costData = <%- JSON.stringify(campaigns.map(c => c.cost)) %>;
 
-        // Xử lý dữ liệu Sources (Gộp tất cả các map lại)
+        // Xử lý dữ liệu Sources
         let sourceDataMap = {};
         const allCampaigns = <%- JSON.stringify(campaigns) %>;
-        
         allCampaigns.forEach(c => {
             if (c.sources && typeof c.sources === 'object') {
                 for (const [key, value] of Object.entries(c.sources)) {
-                    // Chuẩn hóa key về chữ thường để gộp (ví dụ Google == google)
                     let k = key.toLowerCase();
                     if (!sourceDataMap[k]) sourceDataMap[k] = 0;
                     sourceDataMap[k] += Number(value);
@@ -193,7 +166,7 @@
                 labels: Object.keys(sourceDataMap).map(k => k.toUpperCase()),
                 datasets: [{
                     data: Object.values(sourceDataMap),
-                    backgroundColor: ['#10b981', '#f59e0b', '#6366f1', '#ec4899', '#8b5cf6'],
+                    backgroundColor: ['#10b981', '#f59e0b', '#6366f1', '#ec4899'],
                     borderWidth: 0
                 }]
             },

@@ -10,6 +10,7 @@ const trackingRouter = require('./routes/tracking.js');
 const dashboardRouter = require('./routes/dashboard.js');
 const salesRouter = require('./routes/sales.js');
 const roiRouter = require('./routes/roi.js');
+const ordersRouter = require('./routes/orders.js');
 
 const app = express();
 app.use(express.json());
@@ -44,6 +45,9 @@ app.use('/shop', salesRouter);
 
 // dashboard roi
 app.use('/admin/roi', roiRouter);
+
+// orders
+app.use('/admin/orders', ordersRouter);
 
 // Start server
 app.listen(PORT, () => {

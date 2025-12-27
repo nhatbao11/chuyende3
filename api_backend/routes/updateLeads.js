@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db.js'); // Lấy db
+const db = require('../db.js'); 
 
-// Chúng ta cần 'admin' để dùng FieldValue.serverTimestamp()
-// db.js không export admin, nên chúng ta import nó ở đây
 const admin = require('firebase-admin'); 
 
 router.post('/', async (req, res) => {

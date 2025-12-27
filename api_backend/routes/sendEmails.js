@@ -36,9 +36,8 @@ router.post('/', async (req, res) => {
         ${formattedContent}
         
         <p style="margin-top: 20px;">
-          <a href="${clickLink}" 
-             style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-             Xem ưu đãi ngay
+          <a href="${clickLink}">
+             Xem sản phẩm ngay
           </a>
         </p>
         
